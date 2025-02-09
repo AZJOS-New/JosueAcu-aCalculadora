@@ -1,0 +1,21 @@
+{
+    "name": "Calculadora UPC-A",
+    "short_name": "UPC-A",
+    "description": "Calculadora del dígito verificador UPC-A",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#007bff",
+    "icons": [
+        {
+            "src": "https://www.dropbox.com/scl/fi/mwiwcjjs3th0oxjwxyn5w/logocalculadora.jpg?rlkey=68k3xjoxlism1n9nplw8faw4a&st=n2cdw7ia&dl=1",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://www.dropbox.com/scl/fi/mwiwcjjs3th0oxjwxyn5w/logocalculadora.jpg?rlkey=68k3xjoxlism1n9nplw8faw4a&st=n2cdw7ia&dl=1",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
