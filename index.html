@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora UPC-A y Escáner de Códigos</title>
-  <!-- JsBarcode para generar imágenes de códigos de barras -->
+  <link rel="manifest" href="manifest.json">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
-  <!-- QuaggaJS para el escáner de códigos -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
   <style>
     body {
@@ -31,12 +29,13 @@
       margin-top: 20px;
     }
     #scanner {
-      position: relative;
-      width: 300px;
-      height: 200px;
+      width: 100%;
+      max-width: 400px;
+      height: 300px;
       margin: 20px auto;
       border: 1px solid #ccc;
-      display: none; /* Se muestra solo cuando se activa el escáner */
+      display: none;
+      position: relative;
     }
     #historial {
       margin-top: 30px;
@@ -44,7 +43,7 @@
       padding-top: 20px;
     }
     #historial ul {
-      list-style-type: none;
+      list-style: none;
       padding: 0;
     }
     #historial li {
@@ -57,24 +56,6 @@
       margin: 10px;
       cursor: pointer;
     }
-    /* Estilos para el modal */
-    #modal {
-      display: none; 
-      position: fixed; 
-      top: 0; 
-      left: 0; 
-      width: 100%; 
-      height: 100%; 
-      background: rgba(0, 0, 0, 0.5);
-    }
-    #modal-content {
-      background: #fff; 
-      margin: 10% auto; 
-      padding: 20px; 
-      width: 300px; 
-      text-align: center;
-      position: relative;
-    }
   </style>
 </head>
 <body>
@@ -84,175 +65,66 @@
   <p id="resultado"></p>
   <svg id="codigoBarras"></svg>
   <br>
-  <button class="btn" id="guardarBtn" onclick="guardarCodigo()" disabled>Guardar en Historial</button>
-  
+  <button class="btn" id="guardarBtn" onclick="guardarCodigo()" disabled>Guardar</button>
+
   <hr>
   <h2>Escáner de Códigos</h2>
   <button class="btn" onclick="startScanner()">Iniciar Escaneo</button>
   <div id="scanner"></div>
   <button class="btn" id="detenerBtn" onclick="stopScanner()" style="display: none;">Detener Escaneo</button>
-  
+
   <hr>
+
   <div id="historial">
-    <h3>Historial de Códigos</h3>
+    <h3>Historial</h3>  
     <ul id="historialList"></ul>
   </div>
 
-  <!-- Modal para mostrar el código de barras -->
-  <div id="modal">
-    <div id="modal-content">
-      <h3>Código de Barras</h3>
-      <svg id="modalBarcode"></svg>
-      <br>
-      <button class="btn" onclick="cerrarModal()">Cerrar</button>
-    </div>
-  </div>
-
   <script>
-    let currentCode = "";
-    let currentType = "";
-    
-    // Función para calcular el dígito verificador y generar el UPC-A completo
-    function calcularUPC() {
-      let codigo = document.getElementById("codigo").value;
-      if (codigo.length !== 11 || isNaN(codigo)) {
-        document.getElementById("resultado").textContent = "Ingrese exactamente 11 dígitos numéricos.";
-        document.getElementById("codigoBarras").innerHTML = "";
-        document.getElementById("guardarBtn").disabled = true;
-        currentCode = "";
-        return;
-      }
-      let sumaImpares = 0, sumaPares = 0;
-      for (let i = 0; i < 11; i++) {
-        let digito = parseInt(codigo[i]);
-        if (i % 2 === 0) sumaImpares += digito;
-        else sumaPares += digito;
-      }
-      let total = (sumaImpares * 3) + sumaPares;
-      let digitoVerificador = (10 - (total % 10)) % 10;
-      currentCode = codigo + digitoVerificador;
-      currentType = "UPC-A";
-      document.getElementById("resultado").textContent = `Código completo: ${currentCode}`;
-      JsBarcode("#codigoBarras", currentCode, {
-        format: "upc",
-        lineColor: "#000",
-        width: 2,
-        height: 100,
-        displayValue: true
-      });
-      document.getElementById("guardarBtn").disabled = false;
-    }
-    
-    // Función para guardar el código actual en el historial
-    function guardarCodigo() {
-      if (currentCode === "") {
-        alert("No hay código para guardar.");
-        return;
-      }
-      let nombre = prompt("Ingrese un nombre o descripción para el código:");
-      if (!nombre) {
-        alert("Debe ingresar un nombre para guardar el código.");
-        return;
-      }
-      let registro = {
-        codigo: currentCode,
-        nombre: nombre,
-        tipo: currentType,
-        fecha: new Date().toLocaleString()
-      };
-
-      let historial = JSON.parse(localStorage.getItem('historial')) || [];
-      historial.push(registro);
-      localStorage.setItem('historial', JSON.stringify(historial));
-      renderHistorial();
-      document.getElementById("guardarBtn").disabled = true;
-    }
-    
-    // Renderiza el historial leyendo los registros de localStorage
-    function renderHistorial() {
-      let historial = JSON.parse(localStorage.getItem('historial')) || [];
-      let historialList = document.getElementById("historialList");
-      historialList.innerHTML = "";
-      historial.forEach((item) => {
-        let li = document.createElement("li");
-        li.innerHTML = `${item.fecha} - ${item.nombre} (${item.tipo}): ${item.codigo} 
-          <button class="btn" onclick="mostrarCodigo('${item.codigo}', '${item.tipo}')">Ver</button>`;
-        historialList.appendChild(li);
-      });
-    }
-    
-    window.onload = function() {
-      renderHistorial();
-    };
-
-    // Funcionalidades del escáner usando QuaggaJS
     function startScanner() {
       document.getElementById("scanner").style.display = "block";
       document.getElementById("detenerBtn").style.display = "inline-block";
+
       Quagga.init({
         inputStream: {
-          name: "Live",
           type: "LiveStream",
-          target: document.querySelector('#scanner'),
           constraints: {
-            width: 300,
-            height: 200,
-            facingMode: "environment"
-          }
+            width: 640,
+            height: 480,
+            facingMode: "environment" // Cámara trasera
+          },
+          target: document.querySelector("#scanner")
         },
         decoder: {
-          readers: ["upc_reader", "ean_reader"]
+          readers: ["ean_reader", "upc_reader"] // EAN-13 y UPC-A
         }
       }, function(err) {
         if (err) {
-          console.error(err);
-          alert("Error al iniciar el escáner. Asegúrate de estar usando un navegador compatible, que la página esté en HTTPS y que se hayan otorgado permisos para la cámara.");
+          console.error("Error al iniciar Quagga:", err);
           return;
         }
         Quagga.start();
       });
-      Quagga.onDetected(onCodeDetected);
-    }
-    
-    function onCodeDetected(data) {
-      stopScanner();
-      let detectedCode = data.codeResult.code;
-      currentType = (detectedCode.length === 12) ? "UPC-A" : "EAN-13";
-      currentCode = detectedCode;
-      document.getElementById("resultado").textContent = `Código detectado: ${currentCode} (${currentType})`;
-      JsBarcode("#codigoBarras", currentCode, {
-        format: (currentType === "UPC-A") ? "upc" : "ean13",
-        lineColor: "#000",
-        width: 2,
-        height: 100,
-        displayValue: true
+
+      Quagga.onDetected(function(result) {
+        let codigo = result.codeResult.code;
+        console.log("Código detectado:", codigo);
+        alert("Código escaneado: " + codigo);
+        
+        // Agregar al historial
+        let historialList = document.getElementById("historialList");
+        let nuevoItem = document.createElement("li");
+        nuevoItem.textContent = codigo;
+        historialList.appendChild(nuevoItem);
+
+        stopScanner(); // Detener escaneo tras detectar un código
       });
-      document.getElementById("guardarBtn").disabled = false;
     }
-    
+
     function stopScanner() {
-      if (Quagga) {
-        Quagga.stop();
-      }
+      Quagga.stop();
       document.getElementById("scanner").style.display = "none";
       document.getElementById("detenerBtn").style.display = "none";
-      Quagga.offDetected(onCodeDetected);
-    }
-    
-    // Función para mostrar el código en un modal
-    function mostrarCodigo(codigo, tipo) {
-      document.getElementById("modal").style.display = "block";
-      JsBarcode("#modalBarcode", codigo, {
-        format: (tipo === "UPC-A") ? "upc" : "ean13",
-        lineColor: "#000",
-        width: 2,
-        height: 100,
-        displayValue: true
-      });
-    }
-    
-    function cerrarModal() {
-      document.getElementById("modal").style.display = "none";
     }
   </script>
 
