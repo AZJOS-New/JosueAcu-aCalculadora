@@ -81,7 +81,8 @@
   </div>
 
   <script>
-    // Función para calcular el dígito verificador de un código UPC-A
+    let historial = new Map(); // Usamos un Map para evitar duplicados
+
     function calcularUPC() {
       let input = document.getElementById("codigo").value;
       if (input.length !== 11) {
@@ -114,10 +115,28 @@
 
     function guardarCodigo() {
       let codigo = document.getElementById("resultado").innerText.split(": ")[1];
+      
+      if (historial.has(codigo)) {
+        alert("Este código ya está en el historial.");
+        return;
+      }
+
+      let nombre = prompt("Ingrese un nombre para el código:", "Producto X");
+      if (!nombre) return; // Si el usuario cancela, no se guarda
+
+      historial.set(codigo, nombre); // Guardar en el historial sin duplicados
+      actualizarHistorial();
+    }
+
+    function actualizarHistorial() {
       let historialList = document.getElementById("historialList");
-      let nuevoItem = document.createElement("li");
-      nuevoItem.textContent = codigo;
-      historialList.appendChild(nuevoItem);
+      historialList.innerHTML = ""; // Limpiar la lista antes de actualizar
+
+      historial.forEach((nombre, codigo) => {
+        let nuevoItem = document.createElement("li");
+        nuevoItem.textContent = `${nombre}: ${codigo}`;
+        historialList.appendChild(nuevoItem);
+      });
     }
 
     function startScanner() {
@@ -148,15 +167,22 @@
       Quagga.onDetected(function(result) {
         let codigo = result.codeResult.code;
         console.log("Código detectado:", codigo);
-        alert("Código escaneado: " + codigo);
-        
-        // Agregar al historial
-        let historialList = document.getElementById("historialList");
-        let nuevoItem = document.createElement("li");
-        nuevoItem.textContent = codigo;
-        historialList.appendChild(nuevoItem);
 
-        stopScanner(); // Detener escaneo tras detectar un código
+        if (historial.has(codigo)) {
+          alert("Este código ya está en el historial.");
+          stopScanner();
+          return;
+        }
+
+        let nombre = prompt("Ingrese un nombre para el código escaneado:", "Producto Escaneado");
+        if (!nombre) {
+          stopScanner();
+          return;
+        }
+
+        historial.set(codigo, nombre);
+        actualizarHistorial();
+        stopScanner();
       });
     }
 
@@ -169,3 +195,4 @@
 
 </body>
 </html>
+ 
