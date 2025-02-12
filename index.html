@@ -8,94 +8,44 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
-        }
-        input {
-            width: 200px;
-            padding: 10px;
-            font-size: 18px;
-            text-align: center;
-            margin: 10px;
-        }
-        p {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-        svg {
-            margin-top: 20px;
-        }
-        #scanner {
+        /* ... (resto del CSS sin cambios) */
+        #scannerCanvas {
             width: 200px; /* Ancho deseado */
             height: 150px; /* Alto deseado */
             margin: 20px auto;
             border: 1px solid #ccc;
             display: none;
             position: relative;
-            overflow: hidden; /* Para evitar que el video se salga del contenedor */
-        }
-        #historial {
-            margin-top: 30px;
-            border-top: 1px solid #ccc;
-            padding-top: 20px;
-        }
-        #historial ul {
-            list-style: none;
-            padding: 0;
-        }
-        #historial li {
-            margin: 5px 0;
-            font-size: 16px;
-        }
-        .btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <h2>Calculadora de UPC-A</h2>
-    <input type="text" id="codigo" maxlength="11" placeholder="Ingrese 11 dígitos" oninput="calcularUPC()">
-    <p id="resultado"></p>
-    <svg id="codigoBarras"></svg>
-    <br>
-    <button class="btn" id="guardarBtn" onclick="guardarCodigo()" disabled>Guardar</button>
-
+    {/* ... (resto del HTML sin cambios) */}
     <hr>
     <h2>Escáner de Códigos</h2>
     <button class="btn" onclick="startScanner()">Iniciar Escaneo</button>
-    <div id="scanner"></div>
+    <canvas id="scannerCanvas"></canvas> <div id="scanner"></div> {/* El div #scanner sigue existiendo, pero ahora oculto */}
     <button class="btn" id="detenerBtn" onclick="stopScanner()" style="display: none;">Detener Escaneo</button>
-
     <hr>
-
-    <div id="historial">
-        <h3>Historial</h3>  
-        <ul id="historialList"></ul>
-    </div>
+    {/* ... (resto del HTML sin cambios) */}
 
     <script>
         // ... (resto del código JavaScript sin cambios)
 
         function startScanner() {
-            document.getElementById("scanner").style.display = "block";
+            document.getElementById("scannerCanvas").style.display = "block";
             document.getElementById("detenerBtn").style.display = "inline-block";
+            document.getElementById("scanner").style.display = "none"; // Ocultamos el div #scanner
 
             Quagga.init({
                 inputStream: {
                     type: "LiveStream",
                     constraints: {
-                        width: 200, // Ancho deseado
-                        height: 150, // Alto deseado
                         facingMode: "environment" // Cámara trasera
                     },
-                    target: document.querySelector("#scanner")
+                    target: document.querySelector("#scannerCanvas") // Apuntamos al canvas
                 },
                 decoder: {
                     readers: ["ean_reader", "upc_reader"] // EAN-13 y UPC-A
@@ -108,7 +58,21 @@
                 Quagga.start();
             });
 
+            Quagga.onProcessed(function(result) {
+                if (result && result.imageData) {
+                    let canvas = document.getElementById("scannerCanvas");
+                    let ctx = canvas.getContext("2d");
+                    ctx.drawImage(result.imageData, 0, 0, canvas.width, canvas.height); // Dibujamos en el canvas
+                }
+            });
+
             // ... (resto del código de Quagga sin cambios)
+        }
+
+        function stopScanner() {
+            Quagga.stop();
+            document.getElementById("scannerCanvas").style.display = "none";
+            document.getElementById("detenerBtn").style.display = "none";
         }
 
         // ... (resto del código JavaScript sin cambios)
