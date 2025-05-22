@@ -3,80 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora UPC-A y Escáner de Códigos</title>
-    <link rel="manifest" href="manifest.json">
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <title>Escáner de Códigos de Barra UPC/EAN</title>
     <style>
-        /* ... (resto del CSS sin cambios) */
-        #scannerCanvas {
-            width: 200px; /* Ancho deseado */
-            height: 150px; /* Alto deseado */
-            margin: 20px auto;
-            border: 1px solid #ccc;
-            display: none;
-            position: relative;
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #scanner-container {
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            border: 2px solid #333;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        video {
+            width: 100%;
+            height: auto;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
+    <h1>Escáner de Códigos de Barra UPC/EAN</h1>
+    <button onclick="startScanner()">Iniciar Escáner</button>
+    <button onclick="stopScanner()">Detener Escáner</button>
+    <div id="scanner-container">
+        <video id="scanner" autoplay></video>
+    </div>
+    <div id="result">Resultado: Escanea un código de barras...</div>
 
-    <h2>Calculadora de UPC-A</h2>
-    {/* ... (resto del HTML sin cambios) */}
-    <hr>
-    <h2>Escáner de Códigos</h2>
-    <button class="btn" onclick="startScanner()">Iniciar Escaneo</button>
-    <canvas id="scannerCanvas"></canvas> <div id="scanner"></div> {/* El div #scanner sigue existiendo, pero ahora oculto */}
-    <button class="btn" id="detenerBtn" onclick="stopScanner()" style="display: none;">Detener Escaneo</button>
-    <hr>
-    {/* ... (resto del HTML sin cambios) */}
-
+    <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
     <script>
-        // ... (resto del código JavaScript sin cambios)
+        let scannerActive = false;
 
         function startScanner() {
-            document.getElementById("scannerCanvas").style.display = "block";
-            document.getElementById("detenerBtn").style.display = "inline-block";
-            document.getElementById("scanner").style.display = "none"; // Ocultamos el div #scanner
+            if (scannerActive) return;
+            scannerActive = true;
 
             Quagga.init({
                 inputStream: {
+                    name: "Live",
                     type: "LiveStream",
+                    target: document.querySelector('#scanner'),
                     constraints: {
-                        facingMode: "environment" // Cámara trasera
-                    },
-                    target: document.querySelector("#scannerCanvas") // Apuntamos al canvas
+                        facingMode: "environment" // Usa la cámara trasera
+                    }
                 },
                 decoder: {
-                    readers: ["ean_reader", "upc_reader"] // EAN-13 y UPC-A
+                    readers: [
+                        "upc_reader",     // Soporte para UPC
+                        "ean_reader",     // Soporte para EAN-13
+                        "ean_8_reader"    // Soporte para EAN-8
+                    ]
                 }
             }, function(err) {
                 if (err) {
-                    console.error("Error al iniciar Quagga:", err);
+                    console.error("Error al iniciar el escáner: ", err);
+                    document.getElementById('result').innerText = "Error: " + err.message;
                     return;
                 }
+                console.log("Escáner iniciado correctamente");
                 Quagga.start();
             });
 
-            Quagga.onProcessed(function(result) {
-                if (result && result.imageData) {
-                    let canvas = document.getElementById("scannerCanvas");
-                    let ctx = canvas.getContext("2d");
-                    ctx.drawImage(result.imageData, 0, 0, canvas.width, canvas.height); // Dibujamos en el canvas
-                }
+            Quagga.onDetected(function(data) {
+                const code = data.codeResult.code;
+                document.getElementById('result').innerText = `Código detectado: ${code}`;
+                console.log("Código detectado: ", code);
+                // Opcional: Detener el escáner tras detectar un código
+                // stopScanner();
             });
-
-            // ... (resto del código de Quagga sin cambios)
         }
 
         function stopScanner() {
+            if (!scannerActive) return;
             Quagga.stop();
-            document.getElementById("scannerCanvas").style.display = "none";
-            document.getElementById("detenerBtn").style.display = "none";
+            scannerActive = false;
+            document.getElementById('result').innerText = "Escáner detenido. Escanea un código de barras...";
         }
-
-        // ... (resto del código JavaScript sin cambios)
     </script>
-
 </body>
 </html>
