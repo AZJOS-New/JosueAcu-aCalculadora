@@ -19,6 +19,7 @@
         #result {
             margin-top: 20px;
             font-size: 18px;
+            color: #333;
         }
         video {
             width: 100%;
@@ -46,8 +47,17 @@
         let scannerActive = false;
 
         function startScanner() {
-            if (scannerActive) return;
+            if (scannerActive) {
+                document.getElementById('result').innerText = "El escáner ya está activo.";
+                return;
+            }
             scannerActive = true;
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                document.getElementById('result').innerText = "Error: La API de la cámara no es compatible con este navegador.";
+                scannerActive = false;
+                return;
+            }
 
             Quagga.init({
                 inputStream: {
@@ -55,23 +65,27 @@
                     type: "LiveStream",
                     target: document.querySelector('#scanner'),
                     constraints: {
-                        facingMode: "environment" // Usa la cámara trasera
+                        width: 640,
+                        height: 480,
+                        facingMode: { ideal: "environment" } // Intenta la cámara trasera
                     }
                 },
                 decoder: {
                     readers: [
-                        "upc_reader",     // Soporte para UPC
-                        "ean_reader",     // Soporte para EAN-13
-                        "ean_8_reader"    // Soporte para EAN-8
+                        "upc_reader",
+                        "ean_reader",
+                        "ean_8_reader"
                     ]
                 }
             }, function(err) {
                 if (err) {
                     console.error("Error al iniciar el escáner: ", err);
-                    document.getElementById('result').innerText = "Error: " + err.message;
+                    document.getElementById('result').innerText = `Error: ${err.message}. Asegúrate de que la cámara esté disponible y los permisos estén otorgados.`;
+                    scannerActive = false;
                     return;
                 }
                 console.log("Escáner iniciado correctamente");
+                document.getElementById('result').innerText = "Escáner iniciado. Apunta a un código de barras...";
                 Quagga.start();
             });
 
@@ -79,13 +93,14 @@
                 const code = data.codeResult.code;
                 document.getElementById('result').innerText = `Código detectado: ${code}`;
                 console.log("Código detectado: ", code);
-                // Opcional: Detener el escáner tras detectar un código
-                // stopScanner();
             });
         }
 
         function stopScanner() {
-            if (!scannerActive) return;
+            if (!scannerActive) {
+                document.getElementById('result').innerText = "El escáner no está activo.";
+                return;
+            }
             Quagga.stop();
             scannerActive = false;
             document.getElementById('result').innerText = "Escáner detenido. Escanea un código de barras...";
