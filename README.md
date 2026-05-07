@@ -1,2 +1,1 @@
-# JosueAcu-aCalculadora
-Primer proyecto de html
+EQUIPO IREX COSTA RICA
