@@ -1,110 +1,450 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escáner de Códigos de Barra UPC/EAN</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
-        }
-        #scanner-container {
-            width: 100%;
-            max-width: 640px;
-            margin: 0 auto;
-            border: 2px solid #333;
-        }
-        #result {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
-        }
-        video {
-            width: 100%;
-            height: auto;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporte de Vencimientos Irex</title>
+
+  <style>
+    :root {
+      --primary: #16a34a;
+      --primary-hover: #15803d;
+      --secondary: #334155;
+      --danger: #dc2626;
+      --info: #2563eb;
+      --bg: #f3f4f6;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 20px;
+      color: #1f2937;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .title-input {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 22px;
+      font-weight: bold;
+      text-transform: uppercase;
+      border: 1px solid #e5e7eb;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f9fafb;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    table, th, td { border: 1px solid #cbd5e1; }
+    th { background: #f8fafc; padding: 10px; font-size: 13px; text-transform: uppercase; }
+    td { padding: 0; position: relative; }
+    
+    input, select {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      padding: 10px;
+      box-sizing: border-box;
+      background: transparent;
+    }
+
+    input[type="date"] { cursor: pointer; }
+
+    /* Estados de Vencimiento */
+    .verde { background: #bbf7d0 !important; color: #166534; font-weight: bold; }
+    .rojo  { background: #fecaca !important; color: #7f1d1d; font-weight: bold; }
+    .match-hoy { outline: 3px solid var(--info); outline-offset: -3px; }
+
+    /* Botonera */
+    .actions { 
+      display: flex; 
+      gap: 10px; 
+      flex-wrap: wrap; 
+      justify-content: center; 
+      margin-top: 20px; 
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      color: white;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-success { background: var(--primary); }
+    .btn-success:hover { background: var(--primary-hover); }
+    .btn-secondary { background: var(--secondary); }
+    .btn-info { background: var(--info); }
+    .btn-danger { background: var(--danger); }
+
+    /* Paneles */
+    .panel {
+      max-width: 1000px; margin: 15px auto; display: none;
+      background:#fff; border:1px solid #e5e7eb; border-radius: 12px; padding:20px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .panel-row { display:flex; gap:10px; margin-bottom: 10px; }
+    .panel-row input { border:1px solid #cbd5e1; border-radius:8px; background: #fff; }
+
+    .productos-lista {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .producto-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .producto-item:hover { background: #f0f9ff; }
+
+    .status-message {
+      position: fixed; top: 20px; right: 20px;
+      padding: 15px 25px; border-radius: 8px;
+      color: white; font-weight: bold; z-index: 1000; display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    footer { text-align:center; color:#9ca3af; font-size:12px; margin: 25px 0; }
+
+    /* Estilos para impresión/PDF */
+    @media print {
+      .btn-del { display: none !important; }
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <h1>Escáner de Códigos de Barra UPC/EAN</h1>
-    <button onclick="startScanner()">Iniciar Escáner</button>
-    <button onclick="stopScanner()">Detener Escáner</button>
-    <div id="scanner-container">
-        <video id="scanner" autoplay></video>
+
+  <div class="container" id="reporte">
+    <input type="text" id="reporteTitulo" class="title-input" placeholder="Título del reporte" value="Reporte de Vencimientos de Irex">
+
+    <table>
+      <tr><td style="width:150px; padding:10px; font-weight:bold; background:#f8fafc;">Zona</td><td><input id="zona" type="text" placeholder="..."></td></tr>
+      <tr><td style="padding:10px; font-weight:bold; background:#f8fafc;">Cliente</td><td><input id="cliente" type="text" placeholder="..."></td></tr>
+      <tr><td style="padding:10px; font-weight:bold; background:#f8fafc;">Supervisor</td><td><input id="supervisor" type="text" placeholder="..."></td></tr>
+      <tr><td style="padding:10px; font-weight:bold; background:#f8fafc;">Fecha de reporte</td><td><input id="fechaReporte" type="date"></td></tr>
+    </table>
+
+    <table id="tabla">
+      <thead>
+        <tr>
+          <th style="width:180px;">Fecha Vencimiento</th>
+          <th>Producto</th>
+          <th style="width:90px;">Cant.</th>
+          <th style="width:200px;">Tiempo para vencer</th>
+          <th class="btn-del" style="width:40px;"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-success" onclick="agregarFila()">+ Agregar fila</button>
+    <button class="btn btn-secondary" onclick="togglePanel('panelProducto')">📦 Gestionar productos</button>
+    <button class="btn btn-info" onclick="queDeboReportarHoy()">📅 Sugerencia Hoy</button>
+    <button class="btn btn-success" onclick="guardarReporte()">💾 Guardar Reporte</button>
+    <button class="btn btn-info" onclick="cargarReportesGuardados()">📂 Abrir Reporte</button>
+    <button class="btn btn-danger" id="btnPdf">📄 Exportar PDF</button>
+  </div>
+
+  <div id="panelProducto" class="panel">
+    <h3>Gestión de Productos Base</h3>
+    <div class="panel-row">
+      <input id="nuevoProducto" type="text" placeholder="Nombre del nuevo producto..." style="flex:1">
+      <button class="btn btn-success" onclick="guardarProductoBase()">Añadir</button>
     </div>
-    <div id="result">Resultado: Escanea un código de barras...</div>
+    <input id="buscarProducto" type="text" placeholder="Buscar en mi lista..." oninput="filtrarProductos()">
+    <div id="listaProductos" class="productos-lista"></div>
+    <p style="font-size:12px; color:#666;">Total: <span id="contadorProductos">0</span> productos guardados.</p>
+  </div>
 
-    <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
-    <script>
-        let scannerActive = false;
+  <div id="panelReportes" class="panel">
+    <h3>Reportes Guardados</h3>
+    <div id="listaReportes"></div>
+  </div>
 
-        function startScanner() {
-            if (scannerActive) {
-                document.getElementById('result').innerText = "El escáner ya está activo.";
-                return;
-            }
-            scannerActive = true;
+  <div id="resultadoHoy" class="panel" style="border-left: 5px solid var(--info);"></div>
+  
+  <div id="statusMessage" class="status-message"></div>
 
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                document.getElementById('result').innerText = "Error: La API de la cámara no es compatible con este navegador.";
-                scannerActive = false;
-                return;
-            }
+  <footer>Sistema de Gestión Interna - Offline Ready</footer>
 
-            Quagga.init({
-                inputStream: {
-                    name: "Live",
-                    type: "LiveStream",
-                    target: document.querySelector('#scanner'),
-                    constraints: {
-                        width: 640,
-                        height: 480,
-                        facingMode: { ideal: "environment" } // Intenta la cámara trasera
-                    }
-                },
-                decoder: {
-                    readers: [
-                        "upc_reader",
-                        "ean_reader",
-                        "ean_8_reader"
-                    ]
-                }
-            }, function(err) {
-                if (err) {
-                    console.error("Error al iniciar el escáner: ", err);
-                    document.getElementById('result').innerText = `Error: ${err.message}. Asegúrate de que la cámara esté disponible y los permisos estén otorgados.`;
-                    scannerActive = false;
-                    return;
-                }
-                console.log("Escáner iniciado correctamente");
-                document.getElementById('result').innerText = "Escáner iniciado. Apunta a un código de barras...";
-                Quagga.start();
-            });
+  <script>
+    const KEY_PRODUCTOS = "productos_irex_v2";
+    const KEY_REPORTES = "reportes_irex_v2";
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
 
-            Quagga.onDetected(function(data) {
-                const code = data.codeResult.code;
-                document.getElementById('result').innerText = `Código detectado: ${code}`;
-                console.log("Código detectado: ", code);
-            });
-        }
+    // --- MANEJO DE PRODUCTOS ---
+    function cargarProductos() {
+      return JSON.parse(localStorage.getItem(KEY_PRODUCTOS) || "[]");
+    }
 
-        function stopScanner() {
-            if (!scannerActive) {
-                document.getElementById('result').innerText = "El escáner no está activo.";
-                return;
-            }
-            Quagga.stop();
-            scannerActive = false;
-            document.getElementById('result').innerText = "Escáner detenido. Escanea un código de barras...";
-        }
-    </script>
+    function guardarProductoBase() {
+      const input = $("#nuevoProducto");
+      const nombre = input.value.trim();
+      if (!nombre) return;
+      
+      let lista = cargarProductos();
+      if (!lista.includes(nombre)) {
+        lista.push(nombre);
+        lista.sort();
+        localStorage.setItem(KEY_PRODUCTOS, JSON.stringify(lista));
+        mostrarMensaje("Producto guardado", "var(--primary)");
+        actualizarListaProductos();
+      }
+      input.value = "";
+    }
+
+    function actualizarListaProductos() {
+      const listaCont = $("#listaProductos");
+      const productos = cargarProductos();
+      const filtro = $("#buscarProducto").value.toLowerCase();
+      listaCont.innerHTML = "";
+      
+      const filtrados = productos.filter(p => p.toLowerCase().includes(filtro));
+      filtrados.forEach(p => {
+        const item = document.createElement("div");
+        item.className = "producto-item";
+        item.textContent = p;
+        item.onclick = () => { agregarFila("", p); togglePanel('panelProducto'); };
+        listaCont.appendChild(item);
+      });
+      $("#contadorProductos").textContent = productos.length;
+    }
+
+    function filtrarProductos() { actualizarListaProductos(); }
+
+    // --- TABLA ---
+    function agregarFila(fecha = "", producto = "", cantidad = "") {
+      const tbody = $("#tbody");
+      const tr = document.createElement("tr");
+      
+      const productos = cargarProductos();
+      let opciones = productos.map(p => `<option value="${p}" ${p === producto ? 'selected' : ''}>${p}</option>`).join('');
+
+      tr.innerHTML = `
+        <td><input type="date" value="${fecha}" onchange="actualizarFila(this)"></td>
+        <td>
+          <select onchange="ordenarFilas()">
+            <option value="">-- Seleccionar --</option>
+            ${opciones}
+          </select>
+        </td>
+        <td><input type="number" value="${cantidad}" placeholder="0"></td>
+        <td class="tiempo"></td>
+        <td class="btn-del" style="text-align:center;">
+          <button class="btn btn-danger" style="padding:5px 10px;" onclick="this.closest('tr').remove()">X</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      if (fecha) actualizarFila(tr.querySelector('input[type="date"]'));
+    }
+
+    function actualizarFila(input) {
+      const tr = input.closest("tr");
+      const tdTiempo = tr.querySelector(".tiempo");
+      const fechaVenc = new Date(input.value);
+      const hoy = new Date();
+      hoy.setHours(0,0,0,0);
+
+      if (!input.value) {
+        tdTiempo.textContent = "";
+        tdTiempo.className = "tiempo";
+        return;
+      }
+
+      const diffMs = fechaVenc - hoy;
+      const diffDias = Math.ceil(diffMs / 86400000);
+      const diffMeses = (diffDias / 30.44).toFixed(1);
+
+      tdTiempo.textContent = `${diffDias} días (~${diffMeses} meses)`;
+      
+      tr.classList.remove("verde", "rojo");
+      if (diffDias <= 0) {
+        tdTiempo.textContent = "VENCIDO";
+        tr.classList.add("rojo");
+      } else if (diffMeses < 3.5) {
+        tr.classList.add("rojo");
+      } else if (diffMeses >= 4) {
+        tr.classList.add("verde");
+      }
+      
+      ordenarFilas();
+    }
+
+    function ordenarFilas() {
+      const tbody = $("#tbody");
+      const filas = Array.from(tbody.rows);
+      filas.sort((a, b) => {
+        const valA = a.querySelector('input[type="date"]').value || "9999-12-31";
+        const valB = b.querySelector('input[type="date"]').value || "9999-12-31";
+        return new Date(valA) - new Date(valB);
+      });
+      filas.forEach(f => tbody.appendChild(f));
+    }
+
+    // --- REPORTES ---
+    function guardarReporte() {
+      const datos = {
+        id: Date.now(),
+        titulo: $("#reporteTitulo").value,
+        zona: $("#zona").value,
+        cliente: $("#cliente").value,
+        supervisor: $("#supervisor").value,
+        fechaReporte: $("#fechaReporte").value,
+        items: []
+      };
+
+      $$("#tbody tr").forEach(tr => {
+        const f = tr.querySelector('input[type="date"]').value;
+        const p = tr.querySelector('select').value;
+        const c = tr.querySelector('input[type="number"]').value;
+        if (f || p) datos.items.push({ f, p, c });
+      });
+
+      let historial = JSON.parse(localStorage.getItem(KEY_REPORTES) || "[]");
+      historial.push(datos);
+      localStorage.setItem(KEY_REPORTES, JSON.stringify(historial));
+      mostrarMensaje("Reporte guardado en historial", "var(--primary)");
+    }
+
+    function cargarReportesGuardados() {
+      const p = $("#panelReportes");
+      p.style.display = p.style.display === "block" ? "none" : "block";
+      const lista = $("#listaReportes");
+      const historial = JSON.parse(localStorage.getItem(KEY_REPORTES) || "[]");
+      
+      lista.innerHTML = historial.length ? "" : "No hay reportes.";
+      historial.reverse().forEach((r, index) => {
+        const item = document.createElement("div");
+        item.style = "border-bottom:1px solid #eee; padding:10px; display:flex; justify-content:space-between; align-items:center;";
+        item.innerHTML = `
+          <div>
+            <strong>${r.cliente || 'Sin nombre'}</strong> <br> 
+            <small>${r.fechaReporte} | ${r.items.length} productos</small>
+          </div>
+          <div>
+            <button class="btn btn-info" onclick="abrirReporte(${r.id})">Abrir</button>
+          </div>
+        `;
+        lista.appendChild(item);
+      });
+    }
+
+    function abrirReporte(id) {
+      const historial = JSON.parse(localStorage.getItem(KEY_REPORTES) || "[]");
+      const r = historial.find(x => x.id === id);
+      if (!r) return;
+
+      $("#reporteTitulo").value = r.titulo;
+      $("#zona").value = r.zona;
+      $("#cliente").value = r.cliente;
+      $("#supervisor").value = r.supervisor;
+      $("#fechaReporte").value = r.fechaReporte;
+
+      $("#tbody").innerHTML = "";
+      r.items.forEach(i => agregarFila(i.f, i.p, i.c));
+      $("#panelReportes").style.display = "none";
+    }
+
+    // --- UTILIDADES ---
+    function togglePanel(id) {
+      const p = $("#" + id);
+      p.style.display = p.style.display === "block" ? "none" : "block";
+      if (id === 'panelProducto') actualizarListaProductos();
+    }
+
+    function mostrarMensaje(txt, color) {
+      const m = $("#statusMessage");
+      m.textContent = txt;
+      m.style.background = color;
+      m.style.display = "block";
+      setTimeout(() => m.style.display = "none", 3000);
+    }
+
+    function queDeboReportarHoy() {
+      const hoy = new Date();
+      const obj = new Date(hoy.setMonth(hoy.getMonth() + 6));
+      const mm = String(obj.getMonth() + 1).padStart(2, '0');
+      const yyyy = obj.getFullYear();
+      
+      $("#resultadoHoy").style.display = "block";
+      $("#resultadoHoy").innerHTML = `
+        <strong>Sugerencia:</strong> Reportar productos que venzan en <b>${mm}/${yyyy}</b> (6 meses de anticipación).
+      `;
+    }
+
+    // --- EXPORTAR PDF ---
+    $("#btnPdf").addEventListener("click", async () => {
+      const btn = $("#btnPdf");
+      btn.textContent = "Generando...";
+      
+      const { jsPDF } = window.jspdf;
+      const originalBodyBg = document.body.style.background;
+      document.body.style.background = "#fff";
+
+      // Ocultar elementos que no queremos en el PDF
+      $$(".panel, .actions, footer, .btn-del").forEach(el => el.style.display = "none");
+
+      try {
+        const canvas = await html2canvas($("#reporte"), { scale: 2 });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF("p", "mm", "a4");
+        
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        
+        pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
+        pdf.save(`Reporte_${$("#cliente").value || 'Irex'}.pdf`);
+      } catch (e) {
+        console.error(e);
+      }
+
+      // Restaurar UI
+      $$(".actions, footer").forEach(el => el.style.display = "flex");
+      $$(".btn-del").forEach(el => el.style.display = "table-cell");
+      document.body.style.background = originalBodyBg;
+      btn.textContent = "📄 Exportar PDF";
+    });
+
+    // Inicio
+    window.onload = () => {
+      if ($("#tbody").children.length === 0) agregarFila();
+    };
+  </script>
 </body>
 </html>
