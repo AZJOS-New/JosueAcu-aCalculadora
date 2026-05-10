@@ -3,69 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IREX APP COSTA RICA</title>
+  <title>IREX ZONA ATLÁNTICA</title>
+  
   <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-
+  <meta name="theme-color" content="#16a34a">
+  
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
 
   <style>
     :root {
       --primary: #16a34a;
-      --primary-hover: #15803d;
       --secondary: #334155;
       --danger: #dc2626;
-      --info: #2563eb;
       --bg: #f3f4f6;
     }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--bg);
-      margin: 0;
-      padding: 10px;
-      color: #1f2937;
-    }
-
-    .container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    .title-input {
-      width: 100%;
-      text-align: center;
-      margin-bottom: 25px;
-      font-size: 20px;
-      font-weight: bold;
-      text-transform: uppercase;
-      border: 1px solid #e5e7eb;
-      padding: 12px;
-      border-radius: 8px;
-      background: #f9fafb;
-    }
-
-    h3 { border-left: 5px solid var(--primary); padding-left: 10px; margin-top: 30px; text-transform: uppercase; font-size: 16px; color: var(--secondary); }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background: #fff; }
-    table, th, td { border: 1px solid #cbd5e1; }
-    th { background: #f8fafc; padding: 8px; font-size: 12px; }
-    input, select { width: 100%; border: none; outline: none; font-size: 14px; padding: 8px; box-sizing: border-box; background: transparent; }
-    .verde { background: #bbf7d0 !important; }
-    .rojo { background: #fecaca !important; }
+    body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; padding-top: 60px; }
     
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px; margin-bottom: 30px; }
-    .btn { padding: 12px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; color: white; display: flex; align-items: center; gap: 8px; }
-    .btn-success { background: var(--primary); }
-    .btn-info { background: var(--info); }
-    .btn-danger { background: var(--danger); }
-    .btn-secondary { background: var(--secondary); }
+    /* Menú Superior */
+    .header-app { 
+      position: fixed; top: 0; left: 0; right: 0; height: 50px; 
+      background: white; display: flex; align-items: center; 
+      justify-content: space-between; padding: 0 15px; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 1000;
+    }
+    .menu-dots { font-size: 24px; cursor: pointer; padding: 5px; }
     
-    footer { text-align:center; color:#9ca3af; font-size:11px; margin: 20px; }
-    @media print { .no-print { display: none !important; } }
+    /* Contenedores */
+    .container { 
+      background: white; padding: 15px; border-radius: 8px; 
+      max-width: 800px; margin: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    h3 { border-left: 4px solid var(--primary); padding-left: 10px; font-size: 14px; text-transform: uppercase; }
+    
+    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
+    th { background: #f8fafc; padding: 8px; border: 1px solid #ddd; }
+    td { border: 1px solid #ddd; padding: 5px; }
+    
+    input, select { width: 100%; border: 1px solid #eee; padding: 8px; box-sizing: border-box; border-radius: 4px; }
+    
+    /* Alertas de Vencimiento */
+    .vence-ok { background-color: #bbf7d0 !important; color: #166534; font-weight: bold; }
+    .vence-peligro { background-color: #fecaca !important; color: #991b1b; font-weight: bold; }
+
+    /* Botones */
+    .btn { padding: 10px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; margin: 5px 0; width: 100%; }
+    .btn-add { background: var(--primary); }
+    .btn-pdf { background: var(--danger); }
+    .btn-wa { background: #2563eb; }
+
+    /* Modales / Paneles */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; overflow-y: auto; padding: 20px; box-sizing: border-box; }
+    .close-modal { position: absolute; top: 15px; right: 15px; font-size: 20px; font-weight: bold; }
+
+    .card-guia { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; overflow: hidden; }
+    .card-guia img { width: 100%; height: auto; display: block; }
+    .card-body { padding: 10px; }
+
+    @media print { .no-print { display: none; } }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -73,115 +70,152 @@
 </head>
 <body>
 
-  <div class="container" id="reporteCompleto">
-    <input type="text" id="reporteTitulo" class="title-input" value="REPORTE EQUIPO IREX">
+  <div class="header-app no-print">
+    <span style="font-weight: bold; color: var(--primary);">IREX ATLÁNTICA</span>
+    <div class="menu-dots" onclick="toggleMenu()">⋮</div>
+  </div>
+
+  <div id="panelMenu" class="modal">
+    <span class="close-modal" onclick="toggleMenu()">✕</span>
+    <h2>Menú de Gestión</h2>
+    <button class="btn btn-wa" onclick="abrirSeccion('secGuias')">📸 Guías de Ejecución</button>
+    <button class="btn btn-add" onclick="abrirSeccion('secEspacios')">🏗️ Espacios Adicionales</button>
+    <button class="btn btn-wa" onclick="abrirSeccion('secProductos')">⚙️ Gestionar Productos</button>
+  </div>
+
+  <div id="secGuias" class="modal">
+    <span class="close-modal" onclick="cerrarSeccion('secGuias')">✕</span>
+    <h3>Guías de Ejecución (Planimetrías)</h3>
+    <div id="listaGuias">
+      <div class="card-guia">
+        <img src="https://www.dropbox.com/scl/fi/milazk4td4mukxkz66d15/irexlogo.jpg?rlkey=viwgmup6c0oto9r1lf5xkdz31&st=9r98483f&raw=1" alt="Guía">
+        <div class="card-body">
+          <strong>Collarín para Galones</strong>
+          <p style="font-size: 11px; color: #666;">Colocar collarines visibles en el frente de la góndola.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="appContent">
+    <div style="text-align: center; margin-bottom: 15px;">
+        <strong style="font-size: 18px;">REPORTE DE VENCIMIENTOS IREX</strong>
+    </div>
 
     <table>
-      <tr><td style="width:100px; font-weight:bold; background:#f8fafc;">Cliente</td><td><input id="cliente" type="text" placeholder="Punto de venta"></td></tr>
-      <tr><td style="font-weight:bold; background:#f8fafc;">Zona/Fecha</td><td>
-        <div style="display:flex;"><input id="zona" type="text" placeholder="Zona" style="width:50%"><input id="fechaReporte" type="date" style="width:50%"></div>
-      </td></tr>
+      <tr><td style="background:#f1f5f9; font-weight:bold;">Zona</td><td><input type="text" id="zona" value="Zona Atlántica"></td></tr>
+      <tr><td style="background:#f1f5f9; font-weight:bold;">Cliente</td><td><input type="text" id="cliente" placeholder="Nombre del Súper"></td></tr>
+      <tr><td style="background:#f1f5f9; font-weight:bold;">Fecha</td><td><input type="date" id="fechaRep"></td></tr>
     </table>
 
     <h3>1. Control de Vencimientos</h3>
-    <table id="tablaVencimientos">
+    <table id="tablaVenc">
       <thead>
         <tr>
-          <th>Vence</th>
           <th>Producto</th>
-          <th style="width:50px;">Cant.</th>
+          <th>Vence</th>
+          <th style="width:40px;">Cant</th>
           <th>Estado</th>
-          <th class="no-print" style="width:40px;"></th>
+          <th class="no-print"></th>
         </tr>
       </thead>
-      <tbody id="bodyVencimientos"></tbody>
+      <tbody id="bodyVenc"></tbody>
     </table>
-    <button class="btn btn-success no-print" onclick="agregarFilaVencimiento()">+ Agregar Vencimiento</button>
+    <button class="btn btn-add no-print" onclick="agregarFilaVenc()">+ Agregar Fila</button>
 
     <h3>2. Reporte de Faltantes</h3>
-    <table id="tablaFaltantes">
+    <table id="tablaFalt">
       <thead>
         <tr>
           <th>Producto</th>
-          <th style="width:80px;">Góndola</th>
-          <th style="width:80px;">Sugerido</th>
-          <th class="no-print" style="width:40px;"></th>
+          <th style="width:50px;">Góndola</th>
+          <th style="width:50px;">Sugerido</th>
+          <th class="no-print"></th>
         </tr>
       </thead>
-      <tbody id="bodyFaltantes"></tbody>
+      <tbody id="bodyFalt"></tbody>
     </table>
-    <button class="btn btn-info no-print" onclick="agregarFilaFaltante()">+ Reportar Faltante</button>
-  </div>
+    <button class="btn btn-add no-print" onclick="agregarFilaFaltante()" style="background:#2563eb;">+ Reportar Faltante</button>
 
-  <div class="actions no-print">
-    <button class="btn btn-secondary" onclick="compartirWhatsApp()">💬 WhatsApp</button>
-    <button class="btn btn-danger" id="btnPdf">📄 Exportar PDF</button>
+    <div class="no-print" style="margin-top: 20px;">
+      <button class="btn btn-wa" onclick="enviarWhatsApp()">💬 Enviar por WhatsApp</button>
+      <button class="btn btn-pdf" id="btnPdf">📄 Exportar Reporte PDF</button>
+    </div>
   </div>
 
   <script>
-    const PRODUCTOS_BASE = ["Irex Detergente Limón", "Irex Detergente Multiuso", "Irex Lavaplatos Líquido", "Irex Cloro Regular", "Irex Desinfectante Lavanda", "Irex Suavizante", "Fortuna Regular", "Fortuna Limón"];
+    let productos = ["Cloro Blankita 200ml", "Cloro Blankita 900ml", "Irex Detergente Limón", "Desinfectante Lavanda"];
 
-    function generarOpciones() {
-      return PRODUCTOS_BASE.map(p => `<option value="${p}">${p}</option>`).join('');
+    function toggleMenu() {
+      const p = document.getElementById('panelMenu');
+      p.style.display = p.style.display === 'block' ? 'none' : 'block';
     }
 
-    function agregarFilaVencimiento() {
+    function abrirSeccion(id) { document.getElementById(id).style.display = 'block'; }
+    function cerrarSeccion(id) { document.getElementById(id).style.display = 'none'; }
+
+    function generarOpciones() {
+      return productos.map(p => `<option value="${p}">${p}</option>`).join('');
+    }
+
+    function agregarFilaVenc() {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td><input type="date" onchange="calcularVenc(this)"></td>
-        <td><select><option value="">--Producto--</option>${generarOpciones()}</select></td>
+        <td><select>${generarOpciones()}</select></td>
+        <td><input type="date" onchange="validarFecha(this)"></td>
         <td><input type="number" value="0"></td>
-        <td class="status"></td>
-        <td class="no-print"><button onclick="this.closest('tr').remove()" style="background:none; border:none; color:red; cursor:pointer;">✖</button></td>
+        <td class="status-cell">-</td>
+        <td class="no-print"><button onclick="this.closest('tr').remove()" style="color:red; background:none; border:none;">✖</button></td>
       `;
-      document.getElementById("bodyVencimientos").appendChild(tr);
+      document.getElementById("bodyVenc").appendChild(tr);
     }
 
     function agregarFilaFaltante() {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td><select><option value="">--Producto--</option>${generarOpciones()}</select></td>
+        <td><select>${generarOpciones()}</select></td>
         <td><input type="number" value="0"></td>
         <td><input type="number" placeholder="Cant."></td>
-        <td class="no-print"><button onclick="this.closest('tr').remove()" style="background:none; border:none; color:red; cursor:pointer;">✖</button></td>
+        <td class="no-print"><button onclick="this.closest('tr').remove()" style="color:red; background:none; border:none;">✖</button></td>
       `;
-      document.getElementById("bodyFaltantes").appendChild(tr);
+      document.getElementById("bodyFalt").appendChild(tr);
     }
 
-    function calcularVenc(input) {
-      const td = input.closest("tr").querySelector(".status");
-      const diff = (new Date(input.value) - new Date()) / (1000*60*60*24*30.44);
-      td.className = "status " + (diff < 3.5 ? "rojo" : (diff >= 4 ? "verde" : ""));
-      td.textContent = diff.toFixed(1) + " mes";
+    function validarFecha(input) {
+      const celda = input.closest("tr").querySelector(".status-cell");
+      const fechaVence = new Date(input.value);
+      const hoy = new Date();
+      const meses = (fechaVence - hoy) / (1000 * 60 * 60 * 24 * 30.44);
+
+      if (meses < 4) {
+        celda.className = "status-cell vence-peligro";
+        celda.textContent = meses.toFixed(1) + " meses";
+      } else {
+        celda.className = "status-cell vence-ok";
+        celda.textContent = meses.toFixed(1) + " meses";
+      }
     }
 
-    function compartirWhatsApp() {
-      const cliente = document.getElementById("cliente").value || "Cliente";
-      let texto = `*REPORTE IREX - ${cliente}*\n\n*FALTANTES:*`;
-      document.querySelectorAll("#bodyFaltantes tr").forEach(tr => {
-        const p = tr.querySelector("select").value;
-        const s = tr.querySelectorAll("input")[1].value;
-        if(p) texto += `\n• ${p}: Sugerido ${s}`;
-      });
-      window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`);
+    function enviarWhatsApp() {
+      const c = document.getElementById("cliente").value;
+      let msg = `*REPORTE IREX ZONA ATLÁNTICA*\n*Cliente:* ${c}\n\n*VENCIMIENTOS:*`;
+      // ... lógica para armar el texto ...
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
     }
 
     document.getElementById('btnPdf').addEventListener('click', async () => {
-        const { jsPDF } = window.jspdf;
-        const container = document.getElementById('reporteCompleto');
-        const canvas = await html2canvas(container, { scale: 2 });
-        const pdf = new jsPDF("p", "mm", "a4");
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, 190, (canvas.height * 190) / canvas.width);
-        pdf.save("Reporte_Irex.pdf");
+      const { jsPDF } = window.jspdf;
+      const canvas = await html2canvas(document.getElementById('appContent'));
+      const pdf = new jsPDF("p", "mm", "a4");
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, 190, 0);
+      pdf.save("Reporte_Irex_Atlántica.pdf");
     });
 
-    window.onload = () => { 
-      agregarFilaVencimiento(); 
+    window.onload = () => {
+      document.getElementById('fechaRep').valueAsDate = new Date();
+      agregarFilaVenc();
       agregarFilaFaltante();
-      // Registrar Service Worker básico para que Chrome lo detecte como App
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').catch(() => {});
-      }
+      if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
     };
   </script>
 </body>
