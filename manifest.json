@@ -4,8 +4,8 @@
   "display": "standalone",
   "scope": "/eicr-2026/",
   "start_url": "/eicr-2026/index.html",
-  "name": "EQUIPO IREX COSTA RICA 2026",
-  "short_name": "IREX CR APP",
+  "name": "IREX ZONA ATLÁNTICA",
+  "short_name": "IREX ZONA ATLÁNTICA",
   "description": "Herramienta de control de vencimientos y faltantes para el equipo Irex.",
   "icons": [
     {
