@@ -7,7 +7,7 @@
   "name": "Irex - Reporte Integral Equipo",
   "short_name": "IREX App",
   "description": "Herramienta de control de vencimientos y faltantes para el equipo Irex.",
-   "icons": [
+  "icons": [
     {
       "src": "https://www.dropbox.com/scl/fi/milazk4td4mukxkz66d15/irexlogo.jpg?rlkey=viwgmup6c0oto9r1lf5xkdz31&st=9r98483f&raw=1",
       "sizes": "192x192",
@@ -21,3 +21,4 @@
       "purpose": "any"
     }
   ]
+}
