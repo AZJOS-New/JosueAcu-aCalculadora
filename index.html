@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IREX APP COSTA RICA</title>
-   <head>
+  
   <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#16a34a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
   <link rel="icon" type="image/jpeg" href="https://www.dropbox.com/scl/fi/milazk4td4mukxkz66d15/irexlogo.jpg?rlkey=viwgmup6c0oto9r1lf5xkdz31&st=9r98483f&raw=1">
   <link rel="apple-touch-icon" href="https://www.dropbox.com/scl/fi/milazk4td4mukxkz66d15/irexlogo.jpg?rlkey=viwgmup6c0oto9r1lf5xkdz31&st=9r98483f&raw=1">
-</head>
-
-
-
 
   <style>
     :root {
@@ -27,13 +27,13 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: var(--bg);
       margin: 0;
-      padding: 20px;
+      padding: 10px;
       color: #1f2937;
     }
 
     .container {
       background: #fff;
-      padding: 30px;
+      padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       max-width: 1000px;
@@ -44,7 +44,7 @@
       width: 100%;
       text-align: center;
       margin-bottom: 25px;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
       text-transform: uppercase;
       border: 1px solid #e5e7eb;
@@ -53,100 +53,23 @@
       background: #f9fafb;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-
+    h3 { border-left: 5px solid var(--primary); padding-left: 10px; margin-top: 30px; text-transform: uppercase; font-size: 16px; color: var(--secondary); }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background: #fff; }
     table, th, td { border: 1px solid #cbd5e1; }
-    th { background: #f8fafc; padding: 10px; font-size: 13px; text-transform: uppercase; }
-    td { padding: 0; position: relative; }
+    th { background: #f8fafc; padding: 8px; font-size: 12px; }
+    input, select { width: 100%; border: none; outline: none; font-size: 14px; padding: 8px; box-sizing: border-box; background: transparent; }
+    .verde { background: #bbf7d0 !important; }
+    .rojo { background: #fecaca !important; }
     
-    input, select {
-      width: 100%;
-      border: none;
-      outline: none;
-      font-size: 14px;
-      padding: 10px;
-      box-sizing: border-box;
-      background: transparent;
-    }
-
-    input[type="date"] { cursor: pointer; }
-
-    /* Estados de Vencimiento */
-    .verde { background: #bbf7d0 !important; color: #166534; font-weight: bold; }
-    .rojo  { background: #fecaca !important; color: #7f1d1d; font-weight: bold; }
-    .match-hoy { outline: 3px solid var(--info); outline-offset: -3px; }
-
-    /* Botonera */
-    .actions { 
-      display: flex; 
-      gap: 10px; 
-      flex-wrap: wrap; 
-      justify-content: center; 
-      margin-top: 20px; 
-    }
-
-    .btn {
-      padding: 10px 18px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-      color: white;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px; margin-bottom: 30px; }
+    .btn { padding: 12px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; color: white; display: flex; align-items: center; gap: 8px; }
     .btn-success { background: var(--primary); }
-    .btn-success:hover { background: var(--primary-hover); }
-    .btn-secondary { background: var(--secondary); }
     .btn-info { background: var(--info); }
     .btn-danger { background: var(--danger); }
-
-    /* Paneles */
-    .panel {
-      max-width: 1000px; margin: 15px auto; display: none;
-      background:#fff; border:1px solid #e5e7eb; border-radius: 12px; padding:20px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    }
-
-    .panel-row { display:flex; gap:10px; margin-bottom: 10px; }
-    .panel-row input { border:1px solid #cbd5e1; border-radius:8px; background: #fff; }
-
-    .productos-lista {
-      max-height: 200px;
-      overflow-y: auto;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      margin-top: 10px;
-    }
-
-    .producto-item {
-      padding: 8px 12px;
-      cursor: pointer;
-      border-bottom: 1px solid #f3f4f6;
-    }
-    .producto-item:hover { background: #f0f9ff; }
-
-    .status-message {
-      position: fixed; top: 20px; right: 20px;
-      padding: 15px 25px; border-radius: 8px;
-      color: white; font-weight: bold; z-index: 1000; display: none;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-
-    footer { text-align:center; color:#9ca3af; font-size:12px; margin: 25px 0; }
-
-    /* Estilos para impresión/PDF */
-    @media print {
-      .btn-del { display: none !important; }
-    }
+    .btn-secondary { background: var(--secondary); }
+    
+    footer { text-align:center; color:#9ca3af; font-size:11px; margin: 20px; }
+    @media print { .no-print { display: none !important; } }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -154,304 +77,115 @@
 </head>
 <body>
 
-  <div class="container" id="reporte">
-    <input type="text" id="reporteTitulo" class="title-input" placeholder="Título del reporte" value="Reporte de Vencimientos de Irex">
+  <div class="container" id="reporteCompleto">
+    <input type="text" id="reporteTitulo" class="title-input" value="REPORTE EQUIPO IREX">
 
     <table>
-      <tr><td style="width:150px; padding:10px; font-weight:bold; background:#f8fafc;">Zona</td><td><input id="zona" type="text" placeholder="..."></td></tr>
-      <tr><td style="padding:10px; font-weight:bold; background:#f8fafc;">Cliente</td><td><input id="cliente" type="text" placeholder="..."></td></tr>
-      <tr><td style="padding:10px; font-weight:bold; background:#f8fafc;">Supervisor</td><td><input id="supervisor" type="text" placeholder="..."></td></tr>
-      <tr><td style="padding:10px; font-weight:bold; background:#f8fafc;">Fecha de reporte</td><td><input id="fechaReporte" type="date"></td></tr>
+      <tr><td style="width:100px; font-weight:bold; background:#f8fafc;">Cliente</td><td><input id="cliente" type="text" placeholder="Punto de venta"></td></tr>
+      <tr><td style="font-weight:bold; background:#f8fafc;">Zona/Fecha</td><td>
+        <div style="display:flex;"><input id="zona" type="text" placeholder="Zona" style="width:50%"><input id="fechaReporte" type="date" style="width:50%"></div>
+      </td></tr>
     </table>
 
-    <table id="tabla">
+    <h3>1. Control de Vencimientos</h3>
+    <table id="tablaVencimientos">
       <thead>
         <tr>
-          <th style="width:180px;">Fecha Vencimiento</th>
+          <th>Vence</th>
           <th>Producto</th>
-          <th style="width:90px;">Cant.</th>
-          <th style="width:200px;">Tiempo para vencer</th>
-          <th class="btn-del" style="width:40px;"></th>
+          <th style="width:50px;">Cant.</th>
+          <th>Estado</th>
+          <th class="no-print" style="width:40px;"></th>
         </tr>
       </thead>
-      <tbody id="tbody"></tbody>
+      <tbody id="bodyVencimientos"></tbody>
     </table>
+    <button class="btn btn-success no-print" onclick="agregarFilaVencimiento()">+ Agregar Vencimiento</button>
+
+    <h3>2. Reporte de Faltantes</h3>
+    <table id="tablaFaltantes">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th style="width:80px;">Góndola</th>
+          <th style="width:80px;">Sugerido</th>
+          <th class="no-print" style="width:40px;"></th>
+        </tr>
+      </thead>
+      <tbody id="bodyFaltantes"></tbody>
+    </table>
+    <button class="btn btn-info no-print" onclick="agregarFilaFaltante()">+ Reportar Faltante</button>
   </div>
 
-  <div class="actions">
-    <button class="btn btn-success" onclick="agregarFila()">+ Agregar fila</button>
-    <button class="btn btn-secondary" onclick="togglePanel('panelProducto')">📦 Gestionar productos</button>
-    <button class="btn btn-info" onclick="queDeboReportarHoy()">📅 Sugerencia Hoy</button>
-    <button class="btn btn-success" onclick="guardarReporte()">💾 Guardar Reporte</button>
-    <button class="btn btn-info" onclick="cargarReportesGuardados()">📂 Abrir Reporte</button>
+  <div class="actions no-print">
+    <button class="btn btn-secondary" onclick="compartirWhatsApp()">💬 WhatsApp</button>
     <button class="btn btn-danger" id="btnPdf">📄 Exportar PDF</button>
   </div>
 
-  <div id="panelProducto" class="panel">
-    <h3>Gestión de Productos Base</h3>
-    <div class="panel-row">
-      <input id="nuevoProducto" type="text" placeholder="Nombre del nuevo producto..." style="flex:1">
-      <button class="btn btn-success" onclick="guardarProductoBase()">Añadir</button>
-    </div>
-    <input id="buscarProducto" type="text" placeholder="Buscar en mi lista..." oninput="filtrarProductos()">
-    <div id="listaProductos" class="productos-lista"></div>
-    <p style="font-size:12px; color:#666;">Total: <span id="contadorProductos">0</span> productos guardados.</p>
-  </div>
-
-  <div id="panelReportes" class="panel">
-    <h3>Reportes Guardados</h3>
-    <div id="listaReportes"></div>
-  </div>
-
-  <div id="resultadoHoy" class="panel" style="border-left: 5px solid var(--info);"></div>
-  
-  <div id="statusMessage" class="status-message"></div>
-
-  <footer>Sistema de Gestión Interna - Offline Ready</footer>
-
   <script>
-    const KEY_PRODUCTOS = "productos_irex_v2";
-    const KEY_REPORTES = "reportes_irex_v2";
-    const $ = (s) => document.querySelector(s);
-    const $$ = (s) => document.querySelectorAll(s);
+    const PRODUCTOS_BASE = ["Irex Detergente Limón", "Irex Detergente Multiuso", "Irex Lavaplatos Líquido", "Irex Cloro Regular", "Irex Desinfectante Lavanda", "Irex Suavizante", "Fortuna Regular", "Fortuna Limón"];
 
-    // --- MANEJO DE PRODUCTOS ---
-    function cargarProductos() {
-      return JSON.parse(localStorage.getItem(KEY_PRODUCTOS) || "[]");
+    function generarOpciones() {
+      return PRODUCTOS_BASE.map(p => `<option value="${p}">${p}</option>`).join('');
     }
 
-    function guardarProductoBase() {
-      const input = $("#nuevoProducto");
-      const nombre = input.value.trim();
-      if (!nombre) return;
-      
-      let lista = cargarProductos();
-      if (!lista.includes(nombre)) {
-        lista.push(nombre);
-        lista.sort();
-        localStorage.setItem(KEY_PRODUCTOS, JSON.stringify(lista));
-        mostrarMensaje("Producto guardado", "var(--primary)");
-        actualizarListaProductos();
-      }
-      input.value = "";
-    }
-
-    function actualizarListaProductos() {
-      const listaCont = $("#listaProductos");
-      const productos = cargarProductos();
-      const filtro = $("#buscarProducto").value.toLowerCase();
-      listaCont.innerHTML = "";
-      
-      const filtrados = productos.filter(p => p.toLowerCase().includes(filtro));
-      filtrados.forEach(p => {
-        const item = document.createElement("div");
-        item.className = "producto-item";
-        item.textContent = p;
-        item.onclick = () => { agregarFila("", p); togglePanel('panelProducto'); };
-        listaCont.appendChild(item);
-      });
-      $("#contadorProductos").textContent = productos.length;
-    }
-
-    function filtrarProductos() { actualizarListaProductos(); }
-
-    // --- TABLA ---
-    function agregarFila(fecha = "", producto = "", cantidad = "") {
-      const tbody = $("#tbody");
+    function agregarFilaVencimiento() {
       const tr = document.createElement("tr");
-      
-      const productos = cargarProductos();
-      let opciones = productos.map(p => `<option value="${p}" ${p === producto ? 'selected' : ''}>${p}</option>`).join('');
-
       tr.innerHTML = `
-        <td><input type="date" value="${fecha}" onchange="actualizarFila(this)"></td>
-        <td>
-          <select onchange="ordenarFilas()">
-            <option value="">-- Seleccionar --</option>
-            ${opciones}
-          </select>
-        </td>
-        <td><input type="number" value="${cantidad}" placeholder="0"></td>
-        <td class="tiempo"></td>
-        <td class="btn-del" style="text-align:center;">
-          <button class="btn btn-danger" style="padding:5px 10px;" onclick="this.closest('tr').remove()">X</button>
-        </td>
+        <td><input type="date" onchange="calcularVenc(this)"></td>
+        <td><select><option value="">--Producto--</option>${generarOpciones()}</select></td>
+        <td><input type="number" value="0"></td>
+        <td class="status"></td>
+        <td class="no-print"><button onclick="this.closest('tr').remove()" style="background:none; border:none; color:red; cursor:pointer;">✖</button></td>
       `;
-      tbody.appendChild(tr);
-      if (fecha) actualizarFila(tr.querySelector('input[type="date"]'));
+      document.getElementById("bodyVencimientos").appendChild(tr);
     }
 
-    function actualizarFila(input) {
-      const tr = input.closest("tr");
-      const tdTiempo = tr.querySelector(".tiempo");
-      const fechaVenc = new Date(input.value);
-      const hoy = new Date();
-      hoy.setHours(0,0,0,0);
-
-      if (!input.value) {
-        tdTiempo.textContent = "";
-        tdTiempo.className = "tiempo";
-        return;
-      }
-
-      const diffMs = fechaVenc - hoy;
-      const diffDias = Math.ceil(diffMs / 86400000);
-      const diffMeses = (diffDias / 30.44).toFixed(1);
-
-      tdTiempo.textContent = `${diffDias} días (~${diffMeses} meses)`;
-      
-      tr.classList.remove("verde", "rojo");
-      if (diffDias <= 0) {
-        tdTiempo.textContent = "VENCIDO";
-        tr.classList.add("rojo");
-      } else if (diffMeses < 3.5) {
-        tr.classList.add("rojo");
-      } else if (diffMeses >= 4) {
-        tr.classList.add("verde");
-      }
-      
-      ordenarFilas();
-    }
-
-    function ordenarFilas() {
-      const tbody = $("#tbody");
-      const filas = Array.from(tbody.rows);
-      filas.sort((a, b) => {
-        const valA = a.querySelector('input[type="date"]').value || "9999-12-31";
-        const valB = b.querySelector('input[type="date"]').value || "9999-12-31";
-        return new Date(valA) - new Date(valB);
-      });
-      filas.forEach(f => tbody.appendChild(f));
-    }
-
-    // --- REPORTES ---
-    function guardarReporte() {
-      const datos = {
-        id: Date.now(),
-        titulo: $("#reporteTitulo").value,
-        zona: $("#zona").value,
-        cliente: $("#cliente").value,
-        supervisor: $("#supervisor").value,
-        fechaReporte: $("#fechaReporte").value,
-        items: []
-      };
-
-      $$("#tbody tr").forEach(tr => {
-        const f = tr.querySelector('input[type="date"]').value;
-        const p = tr.querySelector('select').value;
-        const c = tr.querySelector('input[type="number"]').value;
-        if (f || p) datos.items.push({ f, p, c });
-      });
-
-      let historial = JSON.parse(localStorage.getItem(KEY_REPORTES) || "[]");
-      historial.push(datos);
-      localStorage.setItem(KEY_REPORTES, JSON.stringify(historial));
-      mostrarMensaje("Reporte guardado en historial", "var(--primary)");
-    }
-
-    function cargarReportesGuardados() {
-      const p = $("#panelReportes");
-      p.style.display = p.style.display === "block" ? "none" : "block";
-      const lista = $("#listaReportes");
-      const historial = JSON.parse(localStorage.getItem(KEY_REPORTES) || "[]");
-      
-      lista.innerHTML = historial.length ? "" : "No hay reportes.";
-      historial.reverse().forEach((r, index) => {
-        const item = document.createElement("div");
-        item.style = "border-bottom:1px solid #eee; padding:10px; display:flex; justify-content:space-between; align-items:center;";
-        item.innerHTML = `
-          <div>
-            <strong>${r.cliente || 'Sin nombre'}</strong> <br> 
-            <small>${r.fechaReporte} | ${r.items.length} productos</small>
-          </div>
-          <div>
-            <button class="btn btn-info" onclick="abrirReporte(${r.id})">Abrir</button>
-          </div>
-        `;
-        lista.appendChild(item);
-      });
-    }
-
-    function abrirReporte(id) {
-      const historial = JSON.parse(localStorage.getItem(KEY_REPORTES) || "[]");
-      const r = historial.find(x => x.id === id);
-      if (!r) return;
-
-      $("#reporteTitulo").value = r.titulo;
-      $("#zona").value = r.zona;
-      $("#cliente").value = r.cliente;
-      $("#supervisor").value = r.supervisor;
-      $("#fechaReporte").value = r.fechaReporte;
-
-      $("#tbody").innerHTML = "";
-      r.items.forEach(i => agregarFila(i.f, i.p, i.c));
-      $("#panelReportes").style.display = "none";
-    }
-
-    // --- UTILIDADES ---
-    function togglePanel(id) {
-      const p = $("#" + id);
-      p.style.display = p.style.display === "block" ? "none" : "block";
-      if (id === 'panelProducto') actualizarListaProductos();
-    }
-
-    function mostrarMensaje(txt, color) {
-      const m = $("#statusMessage");
-      m.textContent = txt;
-      m.style.background = color;
-      m.style.display = "block";
-      setTimeout(() => m.style.display = "none", 3000);
-    }
-
-    function queDeboReportarHoy() {
-      const hoy = new Date();
-      const obj = new Date(hoy.setMonth(hoy.getMonth() + 6));
-      const mm = String(obj.getMonth() + 1).padStart(2, '0');
-      const yyyy = obj.getFullYear();
-      
-      $("#resultadoHoy").style.display = "block";
-      $("#resultadoHoy").innerHTML = `
-        <strong>Sugerencia:</strong> Reportar productos que venzan en <b>${mm}/${yyyy}</b> (6 meses de anticipación).
+    function agregarFilaFaltante() {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><select><option value="">--Producto--</option>${generarOpciones()}</select></td>
+        <td><input type="number" value="0"></td>
+        <td><input type="number" placeholder="Cant."></td>
+        <td class="no-print"><button onclick="this.closest('tr').remove()" style="background:none; border:none; color:red; cursor:pointer;">✖</button></td>
       `;
+      document.getElementById("bodyFaltantes").appendChild(tr);
     }
 
-    // --- EXPORTAR PDF ---
-    $("#btnPdf").addEventListener("click", async () => {
-      const btn = $("#btnPdf");
-      btn.textContent = "Generando...";
-      
-      const { jsPDF } = window.jspdf;
-      const originalBodyBg = document.body.style.background;
-      document.body.style.background = "#fff";
+    function calcularVenc(input) {
+      const td = input.closest("tr").querySelector(".status");
+      const diff = (new Date(input.value) - new Date()) / (1000*60*60*24*30.44);
+      td.className = "status " + (diff < 3.5 ? "rojo" : (diff >= 4 ? "verde" : ""));
+      td.textContent = diff.toFixed(1) + " mes";
+    }
 
-      // Ocultar elementos que no queremos en el PDF
-      $$(".panel, .actions, footer, .btn-del").forEach(el => el.style.display = "none");
+    function compartirWhatsApp() {
+      const cliente = document.getElementById("cliente").value || "Cliente";
+      let texto = `*REPORTE IREX - ${cliente}*\n\n*FALTANTES:*`;
+      document.querySelectorAll("#bodyFaltantes tr").forEach(tr => {
+        const p = tr.querySelector("select").value;
+        const s = tr.querySelectorAll("input")[1].value;
+        if(p) texto += `\n• ${p}: Sugerido ${s}`;
+      });
+      window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`);
+    }
 
-      try {
-        const canvas = await html2canvas($("#reporte"), { scale: 2 });
-        const imgData = canvas.toDataURL('image/png');
+    document.getElementById('btnPdf').addEventListener('click', async () => {
+        const { jsPDF } = window.jspdf;
+        const container = document.getElementById('reporteCompleto');
+        const canvas = await html2canvas(container, { scale: 2 });
         const pdf = new jsPDF("p", "mm", "a4");
-        
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        
-        pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
-        pdf.save(`Reporte_${$("#cliente").value || 'Irex'}.pdf`);
-      } catch (e) {
-        console.error(e);
-      }
-
-      // Restaurar UI
-      $$(".actions, footer").forEach(el => el.style.display = "flex");
-      $$(".btn-del").forEach(el => el.style.display = "table-cell");
-      document.body.style.background = originalBodyBg;
-      btn.textContent = "📄 Exportar PDF";
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, 190, (canvas.height * 190) / canvas.width);
+        pdf.save("Reporte_Irex.pdf");
     });
 
-    // Inicio
-    window.onload = () => {
-      if ($("#tbody").children.length === 0) agregarFila();
+    window.onload = () => { 
+      agregarFilaVencimiento(); 
+      agregarFilaFaltante();
+      // Registrar Service Worker básico para que Chrome lo detecte como App
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      }
     };
   </script>
 </body>
