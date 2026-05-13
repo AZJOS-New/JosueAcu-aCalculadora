@@ -3,220 +3,395 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IREX ZONA ATLÁNTICA</title>
-  
+  <title>IREX PRO V13</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#16a34a">
+  <meta name="theme-color" content="#059669">
+  <!-- Librería para PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   
-  <link rel="icon" type="image/png" href="icon.png">
-  <link rel="apple-touch-icon" href="icon.png">
-
   <style>
     :root {
-      --primary: #16a34a;
-      --secondary: #334155;
-      --danger: #dc2626;
-      --bg: #f3f4f6;
+      --primary: #059669;
+      --primary-dark: #064e3b;
+      --secondary: #64748b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
     }
 
-    body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; padding-top: 60px; }
-    
-    /* Menú Superior */
+    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-top: 65px; overflow-x: hidden; }
+
+    /* CABECERA */
     .header-app { 
-      position: fixed; top: 0; left: 0; right: 0; height: 50px; 
-      background: white; display: flex; align-items: center; 
-      justify-content: space-between; padding: 0 15px; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 1000;
+      position: fixed; top: 0; left: 0; right: 0; height: 55px; 
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      display: flex; align-items: center; justify-content: space-between; 
+      padding: 0 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; color: white;
     }
-    .menu-dots { font-size: 24px; cursor: pointer; padding: 5px; }
-    
-    /* Contenedores */
-    .container { 
-      background: white; padding: 15px; border-radius: 8px; 
-      max-width: 800px; margin: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    
-    h3 { border-left: 4px solid var(--primary); padding-left: 10px; font-size: 14px; text-transform: uppercase; }
-    
-    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 12px; }
-    th { background: #f8fafc; padding: 8px; border: 1px solid #ddd; }
-    td { border: 1px solid #ddd; padding: 5px; }
-    
-    input, select { width: 100%; border: 1px solid #eee; padding: 8px; box-sizing: border-box; border-radius: 4px; }
-    
-    /* Alertas de Vencimiento */
-    .vence-ok { background-color: #bbf7d0 !important; color: #166534; font-weight: bold; }
-    .vence-peligro { background-color: #fecaca !important; color: #991b1b; font-weight: bold; }
 
-    /* Botones */
-    .btn { padding: 10px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; margin: 5px 0; width: 100%; }
+    .container { background: var(--card); padding: 20px; border-radius: 16px; max-width: 800px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+
+    /* MENU LATERAL (SIDEBAR) */
+    .sidebar {
+      position: fixed; top: 0; right: -280px; width: 260px; height: 100%;
+      background: white; z-index: 3000; transition: 0.3s; box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    }
+    .sidebar-header { padding: 20px; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center; }
+    .menu-option { padding: 15px 20px; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-weight: 600; color: var(--text); }
+    .menu-option:active { background: #f8fafc; color: var(--primary); }
+
+    /* TABLAS Y FORMULARIOS */
+    .main-title { width: 100%; border: none; text-align: center; font-weight: 800; font-size: 18px; color: var(--primary-dark); margin-bottom: 20px; background: transparent; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; }
+    h3 { font-size: 13px; text-transform: uppercase; color: var(--secondary); margin-top: 25px; display: flex; align-items: center; gap: 8px; }
+    h3::after { content: ""; flex: 1; height: 1px; background: #e2e8f0; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0 5px; font-size: 11px; table-layout: fixed; }
+    th { color: var(--secondary); font-weight: 600; padding: 8px 4px; text-align: left; font-size: 10px; }
+    td { background: #fff; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 6px 4px; vertical-align: middle; }
+    td:first-child { border-left: 1px solid #f1f5f9; border-radius: 8px 0 0 8px; }
+    td:last-child { border-right: 1px solid #f1f5f9; border-radius: 0 8px 8px 0; }
+    input, textarea, select { border: 1px solid #e2e8f0; padding: 10px; border-radius: 10px; font-size: 12px; outline: none; width: 100%; box-sizing: border-box; }
+    
+    .vence-ok { background: #dcfce7 !important; color: #166534; font-weight: bold; text-align: center; border-radius: 6px; }
+    .vence-peligro { background: #fee2e2 !important; color: #991b1b; font-weight: bold; text-align: center; border-radius: 6px; }
+
+    /* BOTONES */
+    .btn { padding: 12px; border: none; border-radius: 12px; color: white; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 11px; }
     .btn-add { background: var(--primary); }
-    .btn-pdf { background: var(--danger); }
-    .btn-wa { background: #2563eb; }
+    .btn-action { background: #334155; }
+    .btn-info { background: #4f46e5; }
+    .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
 
-    /* Modales / Paneles */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; overflow-y: auto; padding: 20px; box-sizing: border-box; }
-    .close-modal { position: absolute; top: 15px; right: 15px; font-size: 20px; font-weight: bold; }
+    /* GALERIA DE GUIAS */
+    .galeria-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px; }
+    .guia-card { background: white; border-radius: 15px; overflow: hidden; border: 1px solid #eee; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .guia-card img { width: 100%; height: 250px; object-fit: contain; background: #f1f5f9; }
+    .guia-info { padding: 15px; }
 
-    .card-guia { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; overflow: hidden; }
-    .card-guia img { width: 100%; height: auto; display: block; }
-    .card-body { padding: 10px; }
-
-    @media print { .no-print { display: none; } }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4000; backdrop-filter: blur(3px); }
+    .modal-content { background: white; width: 90%; max-width: 450px; margin: 15% auto; padding: 20px; border-radius: 20px; max-height: 80vh; overflow-y: auto; }
   </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
 
-  <div class="header-app no-print">
-    <span style="font-weight: bold; color: var(--primary);">IREX ATLÁNTICA</span>
-    <div class="menu-dots" onclick="toggleMenu()">⋮</div>
-  </div>
-
-  <div id="panelMenu" class="modal">
-    <span class="close-modal" onclick="toggleMenu()">✕</span>
-    <h2>Menú de Gestión</h2>
-    <button class="btn btn-wa" onclick="abrirSeccion('secGuias')">📸 Guías de Ejecución</button>
-    <button class="btn btn-add" onclick="abrirSeccion('secEspacios')">🏗️ Espacios Adicionales</button>
-    <button class="btn btn-wa" onclick="abrirSeccion('secProductos')">⚙️ Gestionar Productos</button>
-  </div>
-
-  <div id="secGuias" class="modal">
-    <span class="close-modal" onclick="cerrarSeccion('secGuias')">✕</span>
-    <h3>Guías de Ejecución (Planimetrías)</h3>
-    <div id="listaGuias">
-      <div class="card-guia">
-        <img src="https://www.dropbox.com/scl/fi/milazk4td4mukxkz66d15/irexlogo.jpg?rlkey=viwgmup6c0oto9r1lf5xkdz31&st=9r98483f&raw=1" alt="Guía">
-        <div class="card-body">
-          <strong>Collarín para Galones</strong>
-          <p style="font-size: 11px; color: #666;">Colocar collarines visibles en el frente de la góndola.</p>
-        </div>
-      </div>
+  <div class="header-app">
+    <div style="display:flex; align-items:center; gap:10px;"><strong>🛡️ IREX PRO</strong></div>
+    <div style="display:flex; gap:15px; align-items:center;">
+        <div onclick="abrirGestorReportes()" style="font-size:20px; cursor:pointer;">🖋️ </div>
+        <div onclick="abrirMenuLateral()" style="font-size:24px; cursor:pointer;">⋮</div>
     </div>
   </div>
 
-  <div class="container" id="appContent">
-    <div style="text-align: center; margin-bottom: 15px;">
-        <strong style="font-size: 18px;">REPORTE DE VENCIMIENTOS IREX</strong>
+  <div id="menuLateral" class="sidebar">
+    <div class="sidebar-header">
+      <strong style="font-size: 18px;">Menú Principal</strong>
+      <span onclick="cerrarMenuLateral()" style="cursor:pointer; font-size:28px;">×</span>
+    </div>
+    <div class="sidebar-content">
+      <div class="menu-option" onclick="mostrarSeccion('reportes')">📊 Reporte Integral</div>
+      <div class="menu-option" onclick="mostrarSeccion('guias')">🖼️ Guías de Ejecución</div>
+      <div class="menu-option" onclick="mostrarSeccion('espacios')">✨ Espacios Adicionales</div>
+    </div>
+  </div>
+
+  <div id="seccionReportes" class="container">
+    <input type="text" class="main-title" id="tituloReporte" value="REPORTE INTEGRAL EQUIPO IREX">
+    
+    <div style="display:grid; gap:8px; margin-bottom: 20px;">
+        <input type="text" id="valZona" value="Zona Atlántica">
+        <input type="text" id="valCliente" placeholder="Nombre del Cliente...">
+        <input type="date" id="fechaReporte">
     </div>
 
+    <h3>📦 Vencimientos</h3>
     <table>
-      <tr><td style="background:#f1f5f9; font-weight:bold;">Zona</td><td><input type="text" id="zona" value="Zona Atlántica"></td></tr>
-      <tr><td style="background:#f1f5f9; font-weight:bold;">Cliente</td><td><input type="text" id="cliente" placeholder="Nombre del Súper"></td></tr>
-      <tr><td style="background:#f1f5f9; font-weight:bold;">Fecha</td><td><input type="date" id="fechaRep"></td></tr>
-    </table>
-
-    <h3>1. Control de Vencimientos</h3>
-    <table id="tablaVenc">
       <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Vence</th>
-          <th style="width:40px;">Cant</th>
-          <th>Estado</th>
-          <th class="no-print"></th>
-        </tr>
+        <tr><th style="width: 28%;">Expira</th><th style="width: 40%;">Producto</th><th style="width: 15%;">Cant.</th><th style="width: 17%;">Meses</th></tr>
       </thead>
       <tbody id="bodyVenc"></tbody>
     </table>
-    <button class="btn btn-add no-print" onclick="agregarFilaVenc()">+ Agregar Fila</button>
+    <input type="text" id="searchVenc" placeholder="🔍 Buscar producto..." onkeyup="filtrarLista('searchVenc', 'listaVenc')">
+    <div id="listaVenc" class="list-container" style="max-height:150px; overflow-y:auto; border:1px solid #eee; border-radius:10px; margin-top:5px;"></div>
 
-    <h3>2. Reporte de Faltantes</h3>
-    <table id="tablaFalt">
+    <h3>⚠️ Faltantes</h3>
+    <table>
       <thead>
-        <tr>
-          <th>Producto</th>
-          <th style="width:50px;">Góndola</th>
-          <th style="width:50px;">Sugerido</th>
-          <th class="no-print"></th>
-        </tr>
+        <tr><th style="width: 50%;">Producto</th><th style="width: 20%;">Góndola</th><th style="width: 20%;">Sugerido</th><th style="width: 10%;"></th></tr>
       </thead>
       <tbody id="bodyFalt"></tbody>
     </table>
-    <button class="btn btn-add no-print" onclick="agregarFilaFaltante()" style="background:#2563eb;">+ Reportar Faltante</button>
+    <input type="text" id="searchFalt" placeholder="🔍 Buscar producto..." onkeyup="filtrarLista('searchFalt', 'listaFalt')">
+    <div id="listaFalt" class="list-container" style="max-height:150px; overflow-y:auto; border:1px solid #eee; border-radius:10px; margin-top:5px;"></div>
 
-    <div class="no-print" style="margin-top: 20px;">
-      <button class="btn btn-wa" onclick="enviarWhatsApp()">💬 Enviar por WhatsApp</button>
-      <button class="btn btn-pdf" id="btnPdf">📄 Exportar Reporte PDF</button>
+    <div style="border: 2px dashed #e2e8f0; border-radius: 16px; padding: 15px; margin-top: 25px;">
+      <div style="display:flex; gap:8px; margin-bottom: 15px;">
+        <input type="text" id="nuevoProducto" placeholder="Nuevo producto a la base...">
+        <button class="btn btn-add" onclick="guardarProducto()" style="width:60px;">+</button>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <button class="btn btn-outline" onclick="exportarLista()">📤 Exportar</button>
+        <button class="btn btn-outline" onclick="importarLista()">📥 Importar</button>
+        <button class="btn btn-action" onclick="guardarNuevoReporte()">💾 Guardar Reporte</button>
+        <button class="btn btn-action" onclick="abrirGestorReportes()">📂 Cargar Reporte</button>
+      </div>
+      <button class="btn btn-info" style="width:100%; margin-top:10px;" onclick="queDeboReportar()">📅 ¿Que debo reportar hoy?</button>
+    </div>
+  </div>
+
+  <div id="seccionGuias" class="container" style="display:none;">
+    <h2 style="color:var(--primary-dark); text-align:center;">🖼️ Guías de Ejecución</h2>
+    <div style="background:#f1f5f9; padding:15px; border-radius:15px; margin-bottom:20px;">
+      <input type="text" id="searchGuias" placeholder="🔍 Buscar por nombre de planimetría..." onkeyup="renderizarGuias()">
+      <button class="btn btn-add" style="margin-top:10px; width:100%;" onclick="abrirModalGuia()">+ Añadir Nueva Guía</button>
+    </div>
+    <div id="galeriaGuias" class="galeria-grid"></div>
+  </div>
+
+  <!-- SECCIÓN ESPACIOS ADICIONALES (ACTUALIZADA) -->
+  <div id="seccionEspacios" class="container" style="display:none;">
+    <h2 style="color:var(--primary-dark); text-align:center;">🏗️ Espacios Adicionales</h2>
+    <div id="formEspacios" style="display:grid; gap:12px; background:#f1f5f9; padding:15px; border-radius:15px;">
+      <input type="text" id="espPersona" placeholder="👤 Persona que reporta">
+      <input type="text" id="espPdv" placeholder="🏪 Punto de Venta">
+      <input type="text" id="espMarca" placeholder="🏷️ Marca (IREX, Blankita, etc...)">
+
+      <select id="espTipo">
+        <option value="">Tipo de espacio...</option>
+        <option value="Tira Cross">Tira Cross</option>
+        <option value="Cabecera">Cabecera</option>
+        <option value="Isla">Isla</option>
+        <option value="Espacio Adicional">Espacio Adicional</option>
+      </select>
+
+      <div style="background:white; padding:10px; border-radius:10px; border:1px solid #e2e8f0;">
+        <label style="font-size:11px; color:var(--secondary); font-weight:bold;">¿SE ESTÁ PAGANDO EL ESPACIO?</label>
+        <div style="display:flex; gap:20px; margin-top:5px;">
+           <label style="font-size:12px;"><input type="radio" name="espPago" value="SÍ"> SÍ</label>
+           <label style="font-size:12px;"><input type="radio" name="espPago" value="NO" checked> NO</label>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+        <div style="text-align:center;">
+          <label class="btn btn-outline" style="font-size:10px;">📸 Antes
+            <input type="file" id="fotoAntes" accept="image/*" style="display:none;" onchange="previewEspacio(this, 'preAntes')">
+          </label>
+          <div id="preAntes" style="margin-top:5px; height:90px; background:#e2e8f0; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden;"></div>
+        </div>
+        <div style="text-align:center;">
+          <label class="btn btn-add" style="font-size:10px;">📸 Después
+            <input type="file" id="fotoDespues" accept="image/*" style="display:none;" onchange="previewEspacio(this, 'preDespues')">
+          </label>
+          <div id="preDespues" style="margin-top:5px; height:90px; background:#e2e8f0; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden;"></div>
+        </div>
+      </div>
+
+      <button class="btn btn-info" onclick="generarReporteInmediato()" style="width:100%; margin-top:10px; background:#059669;">📄 Generar y Compartir PDF</button>
+      <button class="btn btn-outline" onclick="limpiarFormEspacio()" style="width:100%; border-color:#cbd5e1; color:#64748b;">🔄 Limpiar Formulario</button>
+    </div>
+  </div>
+
+  <!-- Plantilla oculta para el PDF -->
+  <div id="plantillaPDF" style="display:none; padding:40px; font-family:'Segoe UI', sans-serif;">
+    <div style="border-bottom:3px solid #059669; padding-bottom:10px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <h1 style="color:#059669; margin:0; font-size:24px;">REPORTE DE EJECUCIÓN</h1>
+            <p style="margin:0; font-size:12px; color:#64748b;">IREX PRO - Zona Atlántica</p>
+        </div>
+        <div style="text-align:right;">
+            <p id="pdfFecha" style="margin:0; font-size:12px; font-weight:bold;"></p>
+        </div>
+    </div>
+    
+    <table style="width:100%; margin-bottom:30px; border-collapse:collapse; font-size:14px;">
+        <tr style="background:#f8fafc;">
+            <th style="padding:10px; border:1px solid #e2e8f0; text-align:left;">Persona que Reporta</th>
+            <td id="pdfPersona" style="padding:10px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr>
+            <th style="padding:10px; border:1px solid #e2e8f0; text-align:left;">Punto de Venta</th>
+            <td id="pdfPdv" style="padding:10px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr style="background:#f8fafc;">
+            <th style="padding:10px; border:1px solid #e2e8f0; text-align:left;">Marca</th>
+            <td id="pdfMarca" style="padding:10px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr>
+            <th style="padding:10px; border:1px solid #e2e8f0; text-align:left;">Tipo de Espacio</th>
+            <td id="pdfTipo" style="padding:10px; border:1px solid #e2e8f0;"></td>
+        </tr>
+        <tr style="background:#f8fafc;">
+            <th style="padding:10px; border:1px solid #e2e8f0; text-align:left;">¿Espacio Pagado?</th>
+            <td id="pdfPago" style="padding:10px; border:1px solid #e2e8f0; font-weight:bold; color:#059669;"></td>
+        </tr>
+    </table>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+        <div style="text-align:center;">
+            <div style="background:#059669; color:white; padding:5px; border-radius:5px 5px 0 0; font-weight:bold;">ANTES</div>
+            <div id="pdfImgAntes" style="border:2px solid #059669; height:350px; display:flex; align-items:center; justify-content:center; overflow:hidden;"></div>
+        </div>
+        <div style="text-align:center;">
+            <div style="background:#059669; color:white; padding:5px; border-radius:5px 5px 0 0; font-weight:bold;">DESPUÉS</div>
+            <div id="pdfImgDespues" style="border:2px solid #059669; height:350px; display:flex; align-items:center; justify-content:center; overflow:hidden;"></div>
+        </div>
     </div>
   </div>
 
   <script>
-    let productos = ["Cloro Blankita 200ml", "Cloro Blankita 900ml", "Irex Detergente Limón", "Desinfectante Lavanda"];
+    // --- DATOS INICIALES ---
+    let productosBase = JSON.parse(localStorage.getItem('productosIrex')) || ["Cloro Blankita 900ml"];
+    let historialReportes = JSON.parse(localStorage.getItem('historialReportes')) || [];
+    let guiasEjecucion = JSON.parse(localStorage.getItem('guiasIrex')) || [];
 
-    function toggleMenu() {
-      const p = document.getElementById('panelMenu');
-      p.style.display = p.style.display === 'block' ? 'none' : 'block';
+    // --- NAVEGACIÓN ---
+    function abrirMenuLateral() { document.getElementById('menuLateral').style.right = '0'; }
+    function cerrarMenuLateral() { document.getElementById('menuLateral').style.right = '-280px'; }
+    function mostrarSeccion(sec) {
+      document.getElementById('seccionReportes').style.display = sec === 'reportes' ? 'block' : 'none';
+      document.getElementById('seccionGuias').style.display = sec === 'guias' ? 'block' : 'none';
+      document.getElementById('seccionEspacios').style.display = sec === 'espacios' ? 'block' : 'none';
+      cerrarMenuLateral();
+      if(sec === 'guias') renderizarGuias();
     }
 
-    function abrirSeccion(id) { document.getElementById(id).style.display = 'block'; }
-    function cerrarSeccion(id) { document.getElementById(id).style.display = 'none'; }
-
-    function generarOpciones() {
-      return productos.map(p => `<option value="${p}">${p}</option>`).join('');
-    }
-
-    function agregarFilaVenc() {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><select>${generarOpciones()}</select></td>
-        <td><input type="date" onchange="validarFecha(this)"></td>
-        <td><input type="number" value="0"></td>
-        <td class="status-cell">-</td>
-        <td class="no-print"><button onclick="this.closest('tr').remove()" style="color:red; background:none; border:none;">✖</button></td>
-      `;
-      document.getElementById("bodyVenc").appendChild(tr);
-    }
-
-    function agregarFilaFaltante() {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><select>${generarOpciones()}</select></td>
-        <td><input type="number" value="0"></td>
-        <td><input type="number" placeholder="Cant."></td>
-        <td class="no-print"><button onclick="this.closest('tr').remove()" style="color:red; background:none; border:none;">✖</button></td>
-      `;
-      document.getElementById("bodyFalt").appendChild(tr);
-    }
-
-    function validarFecha(input) {
-      const celda = input.closest("tr").querySelector(".status-cell");
-      const fechaVence = new Date(input.value);
-      const hoy = new Date();
-      const meses = (fechaVence - hoy) / (1000 * 60 * 60 * 24 * 30.44);
-
-      if (meses < 4) {
-        celda.className = "status-cell vence-peligro";
-        celda.textContent = meses.toFixed(1) + " meses";
-      } else {
-        celda.className = "status-cell vence-ok";
-        celda.textContent = meses.toFixed(1) + " meses";
+    // --- LÓGICA DE ESPACIOS ADICIONALES ---
+    function previewEspacio(input, targetId) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => { 
+            document.getElementById(targetId).innerHTML = `<img src="${e.target.result}" id="${targetId}_img" style="width:100%; height:100%; object-fit:cover;">`; 
+        };
+        reader.readAsDataURL(input.files[0]);
       }
     }
 
-    function enviarWhatsApp() {
-      const c = document.getElementById("cliente").value;
-      let msg = `*REPORTE IREX ZONA ATLÁNTICA*\n*Cliente:* ${c}\n\n*VENCIMIENTOS:*`;
-      // ... lógica para armar el texto ...
-      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+    function generarReporteInmediato() {
+        const persona = document.getElementById('espPersona').value;
+        const pdv = document.getElementById('espPdv').value;
+        const marca = document.getElementById('espMarca').value;
+        const tipo = document.getElementById('espTipo').value;
+        const pago = document.querySelector('input[name="espPago"]:checked').value;
+        const fotoA = document.getElementById('preAntes_img')?.src;
+        const fotoD = document.getElementById('preDespues_img')?.src;
+
+        if(!pdv || !fotoD || !marca) return alert("Por favor completa: Marca, Punto de Venta y Foto del Después.");
+
+        // Llenar plantilla invisible
+        document.getElementById('pdfPersona').innerText = persona || "No especificado";
+        document.getElementById('pdfPdv').innerText = pdv;
+        document.getElementById('pdfMarca').innerText = marca;
+        document.getElementById('pdfTipo').innerText = tipo || "No especificado";
+        document.getElementById('pdfPago').innerText = pago;
+        document.getElementById('pdfFecha').innerText = new Date().toLocaleString();
+        
+        document.getElementById('pdfImgAntes').innerHTML = fotoA ? `<img src="${fotoA}" style="max-width:100%; max-height:100%;">` : "Sin foto";
+        document.getElementById('pdfImgDespues').innerHTML = `<img src="${fotoD}" style="max-width:100%; max-height:100%;">`;
+
+        const element = document.getElementById('plantillaPDF');
+        element.style.display = 'block'; // Mostrar temporalmente para la captura
+
+        const opt = {
+            margin: 0,
+            filename: `Ejecucion_${pdv}_${marca}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, logging: false, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).toPdf().get('pdf').save().then(() => {
+            element.style.display = 'none'; // Volver a ocultar
+        });
     }
 
-    document.getElementById('btnPdf').addEventListener('click', async () => {
-      const { jsPDF } = window.jspdf;
-      const canvas = await html2canvas(document.getElementById('appContent'));
-      const pdf = new jsPDF("p", "mm", "a4");
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, 190, 0);
-      pdf.save("Reporte_Irex_Atlántica.pdf");
-    });
+    function limpiarFormEspacio() {
+        if(confirm("¿Limpiar todo el formulario?")) {
+            document.getElementById('espPdv').value = "";
+            document.getElementById('espMarca').value = "";
+            document.getElementById('espTipo').value = "";
+            document.getElementById('preAntes').innerHTML = "";
+            document.getElementById('preDespues').innerHTML = "";
+        }
+    }
 
-    window.onload = () => {
-      document.getElementById('fechaRep').valueAsDate = new Date();
-      agregarFilaVenc();
-      agregarFilaFaltante();
-      if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
-    };
+    // --- LÓGICA DE GUÍAS ---
+    function abrirModalGuia() { document.getElementById('modalNuevaGuia').style.display = 'block'; }
+    function previewImagen(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => { document.getElementById('previewCont').innerHTML = `<img src="${e.target.result}" style="width:100px; border-radius:10px;">`; };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+    function guardarGuia() {
+      const nombre = document.getElementById('nombreGuia').value;
+      const comentario = document.getElementById('comentarioGuia').value;
+      const foto = document.getElementById('previewCont').querySelector('img')?.src;
+      if(!nombre || !foto) return alert("Completa nombre y foto");
+      guiasEjecucion.push({ id: Date.now(), nombre, comentario, foto });
+      localStorage.setItem('guiasIrex', JSON.stringify(guiasEjecucion));
+      cerrarModal('modalNuevaGuia');
+      renderizarGuias();
+    }
+    function renderizarGuias() {
+      const filtro = document.getElementById('searchGuias').value.toLowerCase();
+      const galeria = document.getElementById('galeriaGuias');
+      galeria.innerHTML = guiasEjecucion.filter(g => g.nombre.toLowerCase().includes(filtro)).map(g => `
+        <div class="guia-card">
+          <img src="${g.foto}">
+          <div class="guia-info">
+            <strong style="color:var(--primary-dark); font-size:16px;">${g.nombre}</strong>
+            <p style="font-size:12px; color:var(--secondary); margin:8px 0;">${g.comentario}</p>
+            <button onclick="eliminarGuia(${g.id})" style="border:none; background:none; color:var(--danger); font-size:11px; cursor:pointer; font-weight:bold;">🗑️ Eliminar</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    function eliminarGuia(id) { if(confirm("¿Borrar guía?")) { guiasEjecucion = guiasEjecucion.filter(g => g.id !== id); localStorage.setItem('guiasIrex', JSON.stringify(guiasEjecucion)); renderizarGuias(); } }
+
+    // --- LÓGICA DE REPORTES (MANTENIDA) ---
+    function agregarAlCuadro(nombre, tipo) {
+      const tr = document.createElement("tr");
+      if(tipo === 'venc') {
+        tr.innerHTML = `<td><input type="date" onchange="calcularVenc(this)"></td><td style="font-weight:600;">${nombre}</td><td><input type="number"></td><td class="status-cell">-</td><td style="width:20px;"><button onclick="this.closest('tr').remove()" style="color:red; border:none; background:none;">✕</button></td>`;
+        document.getElementById("bodyVenc").appendChild(tr);
+      } else {
+        tr.innerHTML = `<td style="font-weight:600;">${nombre}</td><td><input type="number"></td><td><input type="number"></td><td style="text-align:center;"><button onclick="this.closest('tr').remove()" style="color:red; border:none; background:none;">✕</button></td>`;
+        document.getElementById("bodyFalt").appendChild(tr);
+      }
+    }
+    function calcularVenc(input) {
+      const celda = input.closest("tr").querySelector(".status-cell");
+      const meses = (new Date(input.value) - new Date()) / (1000 * 60 * 60 * 24 * 30.44);
+      celda.textContent = isNaN(meses) ? "-" : `${Math.max(0, meses.toFixed(1))}m`;
+      celda.className = "status-cell " + (meses < 4 ? "vence-peligro" : "vence-ok");
+    }
+    function guardarNuevoReporte() {
+      historialReportes.push({ id: Date.now(), titulo: document.getElementById('tituloReporte').value, cliente: document.getElementById('valCliente').value || "Sin Cliente", zona: document.getElementById('valZona').value, fecha: document.getElementById('fechaReporte').value, vencimientos: document.getElementById('bodyVenc').innerHTML, faltantes: document.getElementById('bodyFalt').innerHTML });
+      localStorage.setItem('historialReportes', JSON.stringify(historialReportes));
+      alert("Guardado.");
+    }
+    function abrirGestorReportes() {
+      const lista = document.getElementById('listaReportesGuardados');
+      lista.innerHTML = historialReportes.map(rep => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><div><strong>${rep.cliente}</strong><br><small>${rep.fecha}</small></div><div><button onclick="cargarReporte(${rep.id})" style="background:var(--primary); color:white; border:none; padding:5px; border-radius:5px;">Ver</button> <button onclick="eliminarReporte(${rep.id})" style="background:var(--danger); color:white; border:none; padding:5px; border-radius:5px;">✕</button></div></div>`).join('');
+      document.getElementById('modalReportes').style.display = 'block';
+    }
+    function cargarReporte(id) {
+      const r = historialReportes.find(x => x.id === id);
+      if(r) { document.getElementById('tituloReporte').value = r.titulo; document.getElementById('valCliente').value = r.cliente; document.getElementById('valZona').value = r.zona; document.getElementById('fechaReporte').value = r.fecha; document.getElementById('bodyVenc').innerHTML = r.vencimientos; document.getElementById('bodyFalt').innerHTML = r.faltantes; cerrarModal('modalReportes'); }
+    }
+    function eliminarReporte(id) { historialReportes = historialReportes.filter(x => x.id !== id); localStorage.setItem('historialReportes', JSON.stringify(historialReportes)); abrirGestorReportes(); }
+    function guardarProducto() { const v = document.getElementById('nuevoProducto').value; if(v){ productosBase.push(v); productosBase.sort(); localStorage.setItem('productosIrex', JSON.stringify(productosBase)); document.getElementById('nuevoProducto').value=""; actualizarTodasLasListas(); } }
+    function filtrarLista(i, l) { const f = document.getElementById(i).value.toLowerCase(); const items = document.getElementById(l).getElementsByClassName('prod-item'); for(let it of items) it.style.display = it.innerText.toLowerCase().includes(f) ? "" : "none"; }
+    function queDeboReportar() { const d = new Date(); d.setMonth(d.getMonth() + 6); alert(`Reportar vencimientos antes de: ${d.toLocaleDateString()}`); }
+    function exportarLista() { navigator.clipboard.writeText(JSON.stringify(productosBase)); alert("Copiado."); }
+    function importarLista() { const d = prompt("Pega código:"); if(d){ productosBase = JSON.parse(d); localStorage.setItem('productosIrex', JSON.stringify(productosBase)); actualizarTodasLasListas(); } }
+    function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
+    function actualizarTodasLasListas() {
+      const r = (c, t) => c.innerHTML = productosBase.map(p => `<div class="prod-item" style="padding:10px; border-bottom:1px solid #f1f5f9; cursor:pointer;" onclick="agregarAlCuadro('${p}', '${t}')"><span>${p}</span><strong style="float:right; color:var(--primary);">+</strong></div>`).join('');
+      r(document.getElementById('listaVenc'), 'venc'); r(document.getElementById('listaFalt'), 'falt');
+    }
+    window.onload = () => { document.getElementById('fechaReporte').valueAsDate = new Date(); actualizarTodasLasListas(); };
   </script>
 </body>
 </html>
