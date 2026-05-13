@@ -1,4 +1,4 @@
-const CACHE_NAME = 'irex-app-v6'; // Cambiamos el nombre para forzar la actualización
+const CACHE_NAME = 'irex-app-v7'; // Cambiamos el nombre para forzar la actualización
 const ASSETS = [
   './',
   './index.html',
